@@ -1,4 +1,4 @@
-"""
+﻿"""
 Learning Check-in Skill
 A simple, privacy-first daily learning tracker
 """
@@ -8,5 +8,6 @@ from . import storage
 from . import reminder
 from . import version
 
-__version__ = "1.0.0"
+__version__ = "3.0.0"
 __all__ = ['CheckinSkill', 'storage', 'reminder', 'version']
+

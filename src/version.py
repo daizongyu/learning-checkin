@@ -1,4 +1,4 @@
-"""
+﻿"""
 Version Management for Learning Check-in
 Handles version checking and update notifications
 """
@@ -7,7 +7,7 @@ import json
 import urllib.request
 from typing import Optional, Tuple
 
-__version__ = "1.0.0"
+__version__ = "3.0.0"
 __repo__ = "daizongyu/learning-checkin"
 
 
@@ -77,3 +77,4 @@ def get_version_info() -> dict:
         "version": f"v{__version__}",
         "repo": __repo__
     }
+
