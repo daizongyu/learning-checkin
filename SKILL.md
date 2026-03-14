@@ -52,7 +52,9 @@ python checkin_cli.py status
 
 ## Installation
 
-### Option 1: Direct Use
+**This is a source-only package. Choose one of these methods:**
+
+### Method 1: Git Clone (Recommended)
 
 ```bash
 git clone https://github.com/daizongyu/learning-checkin.git
@@ -60,12 +62,17 @@ cd learning-checkin
 python checkin_cli.py init --nickname YourName --country CN
 ```
 
-### Option 2: Install as Package
+### Method 2: Pip Install from Source
 
 ```bash
+git clone https://github.com/daizongyu/learning-checkin.git
+cd learning-checkin
 pip install .
 learning-checkin init --nickname YourName --country CN
 ```
+
+**Package Type:** Source distribution (no pre-built wheels)  
+**Install Spec:** `pip install .` or direct usage via `python checkin_cli.py`
 
 ---
 

@@ -146,21 +146,20 @@ class LocalCheckinSkill:
             save_json(self.get_streak_path(user_id), streak)
         return streak
     
-    def _get_today_str(self, tz_offset: int = 8) -> str:
-        """Get today's date string"""
-        utc_now = datetime.utcnow()
-        local_now = utc_now + timedelta(hours=tz_offset)
-        return local_now.strftime("%Y-%m-%d")
+    def _get_today_str(self) -> str:
+        """Get today's date string using local timezone"""
+        # Use datetime.now() for local timezone instead of utcnow() with hardcoded offset
+        return datetime.now().strftime("%Y-%m-%d")
     
-    def is_checked_today(self, user_id: str, tz_offset: int = 8) -> tuple:
+    def is_checked_today(self, user_id: str) -> tuple:
         """Check if already checked in today"""
-        today = self._get_today_str(tz_offset)
+        today = self._get_today_str()
         checkin_path = self.get_checkin_path(user_id, today)
         return os.path.exists(checkin_path), today
     
-    def do_checkin(self, user_id: str, note: str = "", tz_offset: int = 8) -> dict:
+    def do_checkin(self, user_id: str, note: str = "") -> dict:
         """Execute check-in"""
-        today = self._get_today_str(tz_offset)
+        today = self._get_today_str()
         checkin_path = self.get_checkin_path(user_id, today)
         
         # Check if already checked in
@@ -217,10 +216,10 @@ class LocalCheckinSkill:
             "total_checkins": streak.get("total_checkins", 0) + 1
         }
     
-    def get_status(self, user_id: str, tz_offset: int = 8) -> dict:
+    def get_status(self, user_id: str) -> dict:
         """Get check-in status"""
-        today = self._get_today_str(tz_offset)
-        checked, _ = self.is_checked_today(user_id, tz_offset)
+        today = self._get_today_str()
+        checked, _ = self.is_checked_today(user_id)
         streak = self.get_streak(user_id)
         profile = self.get_profile(user_id)
         
