@@ -36,8 +36,28 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 from local_skill import LocalCheckinSkill
 
 # Version info
-__version__ = "v2.0.4"
+__version__ = "v2.0.5"
 __repo__ = "daizongyu/learning-checkin"
+
+
+def parse_version(version_str):
+    """
+    Parse version string like 'v2.0.4' into tuple (2, 0, 4) for comparison
+    
+    Args:
+        version_str: Version string like 'v2.0.4' or '2.0.4'
+    
+    Returns:
+        Tuple of (major, minor, patch) as integers
+    """
+    try:
+        # Remove 'v' prefix if present
+        version_str = version_str.lstrip('v')
+        # Split by '.' and convert to integers
+        parts = version_str.split('.')
+        return tuple(int(p) for p in parts[:3])  # Handle major.minor.patch
+    except (ValueError, AttributeError):
+        return (0, 0, 0)
 
 
 def check_update():
@@ -62,12 +82,16 @@ def check_update():
             data = json.loads(response.read())
             latest_version = data.get('tag_name', '')
             
-            # Compare versions - only notify if latest is different from current
-            if latest_version and latest_version != __version__:
-                print(f"\n💡 New version available: {latest_version} (current: {__version__})")
-                print(f"   Update: git pull origin main")
-                print(f"   Release: https://github.com/{__repo__}/releases/latest\n")
-                return True
+            # Compare versions - only notify if latest > current
+            if latest_version:
+                current_ver = parse_version(__version__)
+                latest_ver = parse_version(latest_version)
+                
+                if latest_ver > current_ver:
+                    print(f"\n💡 New version available: {latest_version} (current: {__version__})")
+                    print(f"   Update: git pull origin main")
+                    print(f"   Release: https://github.com/{__repo__}/releases/latest\n")
+                    return True
     except Exception:
         # Silently ignore any network errors
         pass
