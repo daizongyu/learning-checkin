@@ -27,7 +27,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 from local_skill import LocalCheckinSkill
 
 # Version info
-__version__ = "v2.0.2"
+__version__ = "v2.0.3"
 __repo__ = "daizongyu/learning-checkin"
 
 
