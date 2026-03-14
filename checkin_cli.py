@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Learning Check-in CLI - Local Version
+v2.0.6
 
 A simple local learning check-in system with streak tracking.
 No network required, all data stored locally.
@@ -26,7 +27,6 @@ if sys.platform == 'win32':
     try:
         sys.stdout.reconfigure(encoding='utf-8')
     except AttributeError:
-        # Python < 3.7 workaround
         import io
         sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
@@ -36,70 +36,44 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 from local_skill import LocalCheckinSkill
 
 # Version info
-__version__ = "v2.0.5"
+__version__ = "v2.0.6"
 __repo__ = "daizongyu/learning-checkin"
 
 
 def parse_version(version_str):
-    """
-    Parse version string like 'v2.0.4' into tuple (2, 0, 4) for comparison
-    
-    Args:
-        version_str: Version string like 'v2.0.4' or '2.0.4'
-    
-    Returns:
-        Tuple of (major, minor, patch) as integers
-    """
+    """Parse version string like 'v2.0.4' into tuple (2, 0, 4)"""
     try:
-        # Remove 'v' prefix if present
         version_str = version_str.lstrip('v')
-        # Split by '.' and convert to integers
         parts = version_str.split('.')
-        return tuple(int(p) for p in parts[:3])  # Handle major.minor.patch
+        return tuple(int(p) for p in parts[:3])
     except (ValueError, AttributeError):
         return (0, 0, 0)
 
 
 def check_update():
-    """
-    Check for updates from GitHub (lightweight, non-blocking)
-    Uses urllib (standard library) - no external dependencies
-    
-    Returns True if update is available, False otherwise
-    """
+    """Check for updates from GitHub (2s timeout, silent fail)"""
     try:
         import urllib.request
-        
         url = f"https://api.github.com/repos/{__repo__}/releases/latest"
-        
-        # Set timeout to 2 seconds, fail silently
-        request = urllib.request.Request(
-            url,
-            headers={'User-Agent': 'Learning-Checkin-CLI'}
-        )
-        
+        request = urllib.request.Request(url, headers={'User-Agent': 'Learning-Checkin-CLI'})
         with urllib.request.urlopen(request, timeout=2) as response:
             data = json.loads(response.read())
             latest_version = data.get('tag_name', '')
-            
-            # Compare versions - only notify if latest > current
             if latest_version:
                 current_ver = parse_version(__version__)
                 latest_ver = parse_version(latest_version)
-                
                 if latest_ver > current_ver:
-                    print(f"\n💡 New version available: {latest_version} (current: {__version__})")
-                    print(f"   Update: git pull origin main")
-                    print(f"   Release: https://github.com/{__repo__}/releases/latest\n")
+                    print(f"\n[UPDATE] New version available: {latest_version} (current: {__version__})")
+                    print(f"   Run: git pull origin main")
+                    print(f"   Info: https://github.com/{__repo__}/releases/latest\n")
                     return True
     except Exception:
-        # Silently ignore any network errors
         pass
     return False
 
 
 def load_user_config():
-    """Load user config (local cache)"""
+    """Load user config from local storage"""
     from local_skill import get_user_config_path
     config_path = get_user_config_path()
     if os.path.exists(config_path):
@@ -115,7 +89,6 @@ def cmd_init(args, json_output=False):
         result = skill.init_user(args.nickname, args.country)
         
         if json_output:
-            # Output structured data for Agent to process
             output = {
                 "type": "init_success",
                 "data": {
@@ -128,58 +101,56 @@ def cmd_init(args, json_output=False):
             print(json.dumps(output, ensure_ascii=False))
             return
         
+        # Human-readable output
         print("")
-        print("╔═══════════════════════════════════════════════════════════╗")
-        print("║                                                           ║")
-        print("║   🎉  Welcome to Learning Check-in!  🎉                  ║")
-        print("║                                                           ║")
-        print("╚═══════════════════════════════════════════════════════════╝")
+        print("=" * 60)
+        print("  Welcome to Learning Check-in!")
+        print("=" * 60)
         print("")
-        print("✅ User initialization successful!")
+        print("[OK] User initialization successful!")
         print("")
-        print("👤 Your Profile:")
-        print(f"   • User ID: {result['user_id']}")
-        print(f"   • Nickname: {result['nickname']}")
-        print(f"   • Country: {result['country']}")
+        print("Your Profile:")
+        print(f"  - User ID: {result['user_id']}")
+        print(f"  - Nickname: {result['nickname']}")
+        print(f"  - Country: {result['country']}")
         print("")
-        print("┌───────────────────────────────────────────────────────────┐")
+        print("-" * 60)
+        print("Rules:")
+        print("-" * 60)
         print("")
-        print("📋  Rules:")
+        print("1. Daily Check-in")
+        print("   - Check in at least once per day")
+        print("   - Command: python checkin_cli.py checkin")
+        print("   - Optional: Add notes (--note \"text\")")
         print("")
-        print("   1️⃣  Daily Check-in")
-        print("      • Check in at least once per day")
-        print("      • Command: python checkin_cli.py checkin")
-        print("      • Optional: Add notes about what you learned")
+        print("2. Streak Tracking")
+        print("   - Consecutive days counted automatically")
+        print("   - Build your learning habit!")
         print("")
-        print("   2️⃣  Streak Tracking")
-        print("      • Consecutive days are counted automatically")
-        print("      • Build your learning habit!")
+        print("3. Privacy First")
+        print("   - All data stored locally")
+        print("   - No network required (core features)")
+        print("   - No personal info collected")
         print("")
-        print("   3️⃣  Privacy")
-        print("      • All data stored locally")
-        print("      • No network connection required")
-        print("      • No personal information collected")
+        print("-" * 60)
+        print("Quick Start:")
+        print("-" * 60)
         print("")
-        print("└───────────────────────────────────────────────────────────┘")
+        print("  - Daily: python checkin_cli.py checkin")
+        print("  - Note:  python checkin_cli.py checkin --note \"Learned X\"")
+        print("  - Status: python checkin_cli.py status")
         print("")
-        print("🚀  Quick Start:")
+        print("Data Storage:")
+        print("  - Windows: %APPDATA%\\learning-checkin\\")
+        print("  - Linux/macOS: ~/.learning-checkin/")
         print("")
-        print("   • Daily check-in: python checkin_cli.py checkin")
-        print('   • Add note: python checkin_cli.py checkin --note "Studied Python"')
-        print("   • View status: python checkin_cli.py status")
-        print("")
-        print("💾  Data Storage:")
-        print("   • Windows: %APPDATA%\\learning-checkin\\")
-        print("   • Linux/macOS: ~/.learning-checkin/")
-        print("")
-        print("🎯  Ready to start?")
-        print("   Run: python checkin_cli.py checkin")
-        print("")
-        print("└───────────────────────────────────────────────────────────┘")
+        print("=" * 60)
+        print("Ready? Run: python checkin_cli.py checkin")
+        print("=" * 60)
         print("")
         
     except Exception as e:
-        print(f"❌ Initialization failed: {str(e)}")
+        print(f"[ERROR] Initialization failed: {str(e)}")
         sys.exit(1)
 
 
@@ -187,38 +158,34 @@ def cmd_checkin(args):
     """Execute check-in"""
     config = load_user_config()
     if not config:
-        print("❌ Not initialized, please run init command first")
-        print("   Usage: python checkin_cli.py init --nickname <name> --country <code>")
+        print("[ERROR] Not initialized. Run: python checkin_cli.py init --nickname <name> --country <code>")
         sys.exit(1)
     
     try:
         skill = LocalCheckinSkill()
         user_id = config['user_id']
-        
-        # Execute check-in
         result = skill.do_checkin(user_id, getattr(args, 'note', ''))
         
         if result.get('already_checked'):
-            print(f"ℹ️  {result['message']}")
+            print(f"[INFO] {result['message']}")
             return
         
         if not result.get('success'):
-            print(f"❌ {result['message']}")
+            print(f"[ERROR] {result['message']}")
             sys.exit(1)
         
-        # Output result
         print("")
-        print("✅ Check-in successful!")
+        print("[OK] Check-in successful!")
         print("")
-        print(f"📅 Date: {result['date']}")
-        print(f"🔥 Streak: {result['streak']} days")
-        print(f"📊 Total: {result['total_checkins']} days")
+        print(f"  Date: {result['date']}")
+        print(f"  Streak: {result['streak']} days")
+        print(f"  Total: {result['total_checkins']} days")
         print("")
-        print("Keep going, you're getting better! 💪")
+        print("Keep going! You're getting better!")
         print("")
         
     except Exception as e:
-        print(f"❌ Check-in failed: {str(e)}")
+        print(f"[ERROR] Check-in failed: {str(e)}")
         sys.exit(1)
 
 
@@ -226,7 +193,7 @@ def cmd_status(args):
     """View status"""
     config = load_user_config()
     if not config:
-        print("❌ Not initialized, please run init command first")
+        print("[ERROR] Not initialized. Run init command first.")
         sys.exit(1)
     
     try:
@@ -234,27 +201,28 @@ def cmd_status(args):
         user_id = config['user_id']
         status = skill.get_status(user_id)
         
-        checked_emoji = "✅" if status['checked_today'] else "❌"
+        checked = "[OK]" if status['checked_today'] else "[ ]"
         
         print("")
-        print("📊 Check-in Status")
-        print("")
+        print("Check-in Status")
+        print("=" * 40)
         print(f"User: {status['nickname']} ({status['user_id']})")
         print(f"Status: {status['status']}")
-        print(f"{checked_emoji} Today: {'Checked in' if status['checked_today'] else 'Not checked'}")
-        print(f"🔥 Streak: {status['current_streak']} days")
-        print(f"📱 Total: {status['total_checkins']} days")
-        print(f"📈 Longest: {status['longest_streak']} days")
+        print(f"Today: {checked} {'Checked in' if status['checked_today'] else 'Not checked'}")
+        print(f"Streak: {status['current_streak']} days")
+        print(f"Total: {status['total_checkins']} days")
+        print(f"Longest: {status['longest_streak']} days")
+        print("=" * 40)
         print("")
         
     except Exception as e:
-        print(f"❌ Failed to get status: {str(e)}")
+        print(f"[ERROR] Failed to get status: {str(e)}")
         sys.exit(1)
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Learning Check-in CLI - Simple local check-in system (no network required)',
+        description='Learning Check-in CLI - Local, privacy-first habit tracker',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -262,31 +230,32 @@ Examples:
   python checkin_cli.py checkin
   python checkin_cli.py checkin --note "Learned Python"
   python checkin_cli.py status
+  python checkin_cli.py init --nickname Test --country US --json
         """
     )
     
-    subparsers = parser.add_subparsers(dest='command', help='Available commands')
+    subparsers = parser.add_subparsers(dest='command', help='Commands')
     
-    # init command
-    init_parser = subparsers.add_parser('init', help='Initialize new user')
-    init_parser.add_argument('--nickname', required=True, help='User nickname')
-    init_parser.add_argument('--country', required=True, help='Country code (e.g., CN, US, UK)')
-    init_parser.add_argument('--json', action='store_true', help='Output JSON for Agent integration')
+    # init
+    init_p = subparsers.add_parser('init', help='Initialize new user')
+    init_p.add_argument('--nickname', required=True, help='Your nickname')
+    init_p.add_argument('--country', required=True, help='Country code (CN, US, UK, etc.)')
+    init_p.add_argument('--json', action='store_true', help='JSON output for Agent')
     
-    # checkin command
-    checkin_parser = subparsers.add_parser('checkin', help='Check in for today')
-    checkin_parser.add_argument('--note', help='Check-in note (optional)')
+    # checkin
+    checkin_p = subparsers.add_parser('checkin', help='Daily check-in')
+    checkin_p.add_argument('--note', help='Optional learning note')
     
-    # status command
-    subparsers.add_parser('status', help='View current check-in status')
+    # status
+    subparsers.add_parser('status', help='View your status')
     
     args = parser.parse_args()
     
-    # Check for updates (non-blocking, runs in background)
+    # Check for updates
     check_update()
     
     if args.command == 'init':
-        cmd_init(args, json_output=getattr(args, 'json', False))
+        cmd_init(args, json_output=args.json)
     elif args.command == 'checkin':
         cmd_checkin(args)
     elif args.command == 'status':
