@@ -39,7 +39,7 @@ def get_user_language():
         return "en"
 
 # Configuration
-VERSION = "3.0.2"
+VERSION = "3.0.3"
 GITHUB_REPO = "daizongyu/learning-checkin"
 
 # Get the directory where this script is located
@@ -360,11 +360,15 @@ def do_checkin():
         messages = get_message("checkin_success", lang)
         message = random.choice(messages).format(streak=streak)
 
+    # Check for updates (non-blocking)
+    update_info = check_version_sync()
+
     return {
         "success": True,
         "message": message,
         "streak": streak,
-        "date": checkin_record["date"]
+        "date": checkin_record["date"],
+        "update": update_info
     }
 
 
@@ -420,6 +424,27 @@ def check_version_async(callback):
     thread = threading.Thread(target=_check)
     thread.daemon = True
     thread.start()
+
+
+def check_version_sync():
+    """Check for new version synchronously (for use in checkin)."""
+    try:
+        url = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
+        req = urllib.request.Request(url, headers={"User-Agent": "Learning-Checkin-Skill"})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            data = json.loads(response.read().decode("utf-8"))
+            latest_version = data.get("tag_name", "").strip("v")
+            if latest_version and compare_versions(latest_version, VERSION) > 0:
+                lang = get_user_language()
+                update_msg = {
+                    "has_update": True,
+                    "latest_version": latest_version,
+                    "update_message": f"🎉 新版本 v{latest_version} 可用！请更新以获得最新功能。" if lang == "zh" else f"🎉 New version v{latest_version} available! Please update for the latest features."
+                }
+                return update_msg
+    except Exception:
+        pass
+    return {"has_update": False}
 
 
 def compare_versions(v1, v2):
