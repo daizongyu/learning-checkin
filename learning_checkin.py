@@ -25,7 +25,7 @@ import urllib.request
 import urllib.error
 
 # Configuration
-VERSION = "1.0.0"
+VERSION = "3.0.0"
 GITHUB_REPO = "daizongyu/learning-checkin"
 
 # Get the directory where this script is located

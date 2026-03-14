@@ -1,4 +1,0 @@
-  File "D:\workspace\learning-checkin\learning_checkin.py", line 58
-    "\u2b50 今天的你学习了吗？告诉我"完成了"，我们一起保持 streak！"
-                    ^^^
-SyntaxError: invalid syntax. Is this intended to be part of the string?
