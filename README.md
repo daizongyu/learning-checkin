@@ -6,15 +6,34 @@ A daily learning habit tracker skill for OpenClaw/CoPaw agents.
 
 - **Simple Check-in**: Just tell your agent "I'm done" or "check-in complete"
 - **Streak Tracking**: Build your consecutive day streak
-- **Smart Reminders**: Morning, afternoon, and evening reminders
+- **Smart Reminders**: Morning, afternoon, and evening reminders (via cron)
 - **Customizable**: Edit rules to fit your schedule
-- **Version Updates**: Automatic update detection
+- **Automatic Updates**: Version check on each check-in
+
+## Installation
+
+This skill is designed to be used with CoPaw or similar applications.
+
+### Manual Installation
+
+1. Copy the skill folder to your CoPaw skills directory:
+   - Path: `C:\Users\YourName\.copaw\active_skills\learning-checkin\`
+
+2. The skill will automatically initialize when first used.
+
+### Usage
+
+Simply tell your agent:
+- "I want to use the learning check-in skill" (first time)
+- "I'm done with my learning" or "check-in complete" (daily check-in)
+- "What's my streak?" or "How am I doing?" (check progress)
 
 ## Quick Start
 
-### 1. Initialize the Skill
+### 1. First Time Setup
 
-Tell your agent: "I want to use the learning check-in skill"
+The first time you activate this skill, tell your agent:
+"I want to use the learning check-in skill"
 
 The agent will:
 - Welcome you and explain the rules
@@ -35,21 +54,21 @@ Your agent will:
 
 ### 3. Reminders (Optional)
 
-If enabled, you'll receive reminders at:
+If you set up cron jobs for reminders, you'll receive messages at:
 - **09:00** - Friendly morning reminder
 - **17:00** - Encouraging afternoon reminder  
 - **20:00** - Urgent evening reminder
 
 The tone becomes more pressing as the day goes on!
 
-## Data Location
+## Data Storage
 
-Your check-in data is stored in:
+Your check-in data is stored in your workspace:
 - `D:\workspace\learning-checkin\` (Windows)
 - `~/workspace/learning-checkin/` (Linux/Mac)
 
 Files:
-- `rule.md` - Your personalized rules
+- `rule.md` - Your personalized rules (auto-created on first use)
 - `records.json` - Check-in history
 - `version.txt` - Current skill version
 
@@ -59,6 +78,12 @@ Edit `rule.md` to customize:
 - Reminder times
 - Reminder messages
 - Your personal goals
+
+## Technical Requirements
+
+- Python 3.x
+- No external dependencies (uses standard library only)
+- Works on Windows, Linux, and macOS
 
 ## Version
 
