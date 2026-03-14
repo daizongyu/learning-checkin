@@ -167,6 +167,6 @@ The Agent should:
 
 ## Version
 
-Current version: 3.0.0
+Current version: 3.0.1
 
 GitHub: https://github.com/daizongyu/learning-checkin

@@ -39,7 +39,7 @@ def get_user_language():
         return "en"
 
 # Configuration
-VERSION = "3.0.0"
+VERSION = "3.0.1"
 GITHUB_REPO = "daizongyu/learning-checkin"
 
 # Get the directory where this script is located
