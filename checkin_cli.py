@@ -108,11 +108,25 @@ def load_user_config():
     return None
 
 
-def cmd_init(args):
+def cmd_init(args, json_output=False):
     """Initialize user"""
     try:
         skill = LocalCheckinSkill()
         result = skill.init_user(args.nickname, args.country)
+        
+        if json_output:
+            # Output structured data for Agent to process
+            output = {
+                "type": "init_success",
+                "data": {
+                    "user_id": result['user_id'],
+                    "nickname": result['nickname'],
+                    "country": result['country'],
+                    "language_hint": "zh" if result['country'].upper() in ['CN', 'TW', 'HK', 'MO', 'SG'] else "en"
+                }
+            }
+            print(json.dumps(output, ensure_ascii=False))
+            return
         
         print("")
         print("╔═══════════════════════════════════════════════════════════╗")
@@ -257,6 +271,7 @@ Examples:
     init_parser = subparsers.add_parser('init', help='Initialize new user')
     init_parser.add_argument('--nickname', required=True, help='User nickname')
     init_parser.add_argument('--country', required=True, help='Country code (e.g., CN, US, UK)')
+    init_parser.add_argument('--json', action='store_true', help='Output JSON for Agent integration')
     
     # checkin command
     checkin_parser = subparsers.add_parser('checkin', help='Check in for today')
@@ -271,7 +286,7 @@ Examples:
     check_update()
     
     if args.command == 'init':
-        cmd_init(args)
+        cmd_init(args, json_output=getattr(args, 'json', False))
     elif args.command == 'checkin':
         cmd_checkin(args)
     elif args.command == 'status':
