@@ -40,22 +40,22 @@ REMINDER_LOG_FILE = os.path.join(DATA_DIR, "reminder_log.json")
 # Default reminder times (24-hour format)
 DEFAULT_REMINDER_TIMES = ["09:00", "17:00", "20:00"]
 
-# Reminder messages by time of day
+# Reminder messages by time of day (friendly and encouraging)
 DEFAULT_MESSAGES = {
     "09:00": [
-        "Good morning! Don't forget your daily learning check-in today! 🌅",
-        "Morning check-in! Start your day with learning! ☀️",
-        "Hey! Time to check in for today's learning session! 📚"
+        "☀️ 早上好！今天的的学习完成了吗？开始一天的学习吧！",
+        "🌅 新的一天！记得今天的打卡哦～",
+        "📚 早晨提醒：学习是每天的小目标，完成后告诉我吧！"
     ],
     "17:00": [
-        "Afternoon reminder: Have you checked in your learning today? 🕔",
-        "It's {time}! Don't forget your daily check-in! 💪",
-        "Time to log your learning progress for today! 🌤️"
+        "🌤️ 下午好！今天的任务完成了吗？",
+        "💪 一天过半了！学习进度怎么样？",
+        "⏰ 提醒一下：今天的打卡还没有记录哦！"
     ],
     "20:00": [
-        "It's getting late! Have you completed your learning check-in? 🌙",
-        "Final reminder: Don't forget to check in your learning today! 🔥",
-        "Last call for today's learning check-in! Don't miss your streak! ⭐"
+        "🌙 晚上好！别忘了今天的打卡，连续记录很重要！",
+        "🔥 最后提醒：今天还没打卡呢，别让连续记录断掉！",
+        "⭐ 今天的你学习了吗？告诉我"完成了"，我们一起保持 streak！"
     ]
 }
 
@@ -163,10 +163,17 @@ def get_streak():
 def do_checkin():
     """Perform check-in."""
     if is_checked_in_today():
+        streak = get_streak()
+        messages = [
+            f"你今天已经打过卡了！太棒了！保持这个势头！🔥",
+            f"今天的你已经很优秀了！明天继续加油！💪",
+            f"又一天坚持下来了！为你骄傲！⭐"
+        ]
+        import random
         return {
             "success": False,
-            "message": "You have already checked in today! Great job! 🎉",
-            "streak": get_streak()
+            "message": random.choice(messages),
+            "streak": streak
         }
 
     now = datetime.datetime.now()
@@ -181,9 +188,27 @@ def do_checkin():
 
     streak = get_streak()
 
+    # 根据streak返回不同的庆祝消息
+    if streak == 1:
+        message = "🎉 太棒了！第一天打卡完成！这是个好开始！"
+    elif streak == 7:
+        message = "🌟 一周了！连续7天学习，你太厉害了！"
+    elif streak == 30:
+        message = "🏆 一个月！30天连续学习，你是超级学霸！"
+    elif streak == 100:
+        message = "👑 100天！你是学习王者！膜拜！"
+    else:
+        messages = [
+            f"✅ 打卡成功！连续 {streak} 天了！继续加油！💪",
+            f"✨ 今日学习已完成！连续 {streak} 天，保持住！",
+            f"🎯 第 {streak} 天！每一天的坚持都值得尊敬！"
+        ]
+        import random
+        message = random.choice(messages)
+
     return {
         "success": True,
-        "message": f"Check-in successful! You're on a {streak}-day streak! 🌟",
+        "message": message,
         "streak": streak,
         "date": checkin_record["date"]
     }
@@ -196,11 +221,23 @@ def get_status():
     records = load_records()
     total_checkins = len(records.get("checkins", []))
 
+    # 生成友好的状态消息
+    if today_checked:
+        status_message = "✅ 今天的卡已经打过了！"
+    else:
+        status_message = "⏳ 今天的还没打卡哦～"
+
+    if streak > 0:
+        status_message += f" 连续 {streak} 天了！"
+    else:
+        status_message += " 开始你的连续打卡之旅吧！"
+
     return {
         "checked_in_today": today_checked,
         "streak": streak,
         "total_checkins": total_checkins,
-        "today": get_today()
+        "today": get_today(),
+        "message": status_message
     }
 
 
@@ -246,35 +283,35 @@ def compare_versions(v1, v2):
     return 0
 
 
+def get_welcome_message():
+    """Get the friendly welcome message for first-time users."""
+    return """🎉 欢迎开启学习之旅！
+
+很高兴你决定培养每日学习的习惯！这是一个很棒的决定 👏
+
+🌟 多么简单：
+   每天学习完成后，告诉我"我完成了"就行！
+
+🔥 连续打卡：
+   我会帮你记录连续学习的天数
+   一天不打卡，连续记录就会重置哦
+
+⏰ 温柔提醒：
+   如果你忘记打卡，我会在这三个时间提醒你：
+   • 早上 9 点 ☀️
+   • 下午 5 点 🌤️
+   • 晚上 8 点 🌙
+
+准备好了吗？让我们开始第一次打卡吧！"""
+
+
 def init_skill():
     """Initialize the skill - create data directory and default files."""
     ensure_dir()
 
     # Create default rule.md if not exists
     if not os.path.exists(RULE_FILE):
-        default_rule = """# Learning Check-in Rules
-
-## Daily Check-in
-- One check-in per day
-- Simply tell me "I finished my learning" or "check-in done" when you're done
-
-## Reminder Times
-- 09:00 - Morning reminder (friendly)
-- 17:00 - Afternoon reminder (encouraging)
-- 20:00 - Evening reminder (urgent)
-
-## Streak
-- Keep your streak going by checking in every day!
-- I'll remind you if you forget
-
-## Customization
-You can edit this file to customize your rules:
-- Change reminder times
-- Edit reminder messages
-- Add your own notes
-
-Just let me know if you want to make changes!
-"""
+        default_rule = get_welcome_message()
         with open(RULE_FILE, "w", encoding="utf-8") as f:
             f.write(default_rule)
 
@@ -288,8 +325,9 @@ Just let me know if you want to make changes!
 
     return {
         "success": True,
-        "message": "Learning check-in skill initialized!",
-        "data_dir": DATA_DIR
+        "message": get_welcome_message(),
+        "data_dir": DATA_DIR,
+        "first_time": True
     }
 
 
