@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿from setuptools import setup, find_packages
+=======
+from setuptools import setup, find_packages
+>>>>>>> 2ee129622cfb7b848cc71e189749cbd25a7837ca
 from pathlib import Path
 
 this_directory = Path(__file__).parent
@@ -47,4 +51,7 @@ setup(
     },
     include_package_data=True,
 )
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2ee129622cfb7b848cc71e189749cbd25a7837ca

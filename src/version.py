@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿"""
+=======
+"""
+>>>>>>> 2ee129622cfb7b848cc71e189749cbd25a7837ca
 Version Management for Learning Check-in
 Handles version checking and update notifications
 """
@@ -77,4 +81,7 @@ def get_version_info() -> dict:
         "version": f"v{__version__}",
         "repo": __repo__
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2ee129622cfb7b848cc71e189749cbd25a7837ca
