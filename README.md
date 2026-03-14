@@ -114,7 +114,7 @@ Edit the `rule.md` file (in the data folder) to customize:
 
 ## Version
 
-Current: **3.0.1**
+Current: **3.0.2**
 
 ## GitHub
 

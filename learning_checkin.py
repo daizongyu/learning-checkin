@@ -39,7 +39,7 @@ def get_user_language():
         return "en"
 
 # Configuration
-VERSION = "3.0.1"
+VERSION = "3.0.2"
 GITHUB_REPO = "daizongyu/learning-checkin"
 
 # Get the directory where this script is located
@@ -465,12 +465,21 @@ def init_skill():
     with open(VERSION_FILE, "w", encoding="utf-8") as f:
         f.write(VERSION)
 
+    # Generate cron job setup commands
+    cron_setup = {
+        "09:00": '<command> cron create --type agent --name "Learning Check-in Morning" --cron "0 9 * * *" --channel <channel> --text "Run: python <skill_path>/learning_checkin.py checkin"',
+        "17:00": '<command> cron create --type agent --name "Learning Check-in Afternoon" --cron "0 17 * * *" --channel <channel> --text "Run: python <skill_path>/learning_checkin.py checkin"',
+        "20:00": '<command> cron create --type agent --name "Learning Check-in Evening" --cron "0 20 * * *" --channel <channel> --text "Run: python <skill_path>/learning_checkin.py checkin"'
+    }
+
     return {
         "success": True,
         "message": get_welcome_message(lang),
         "data_dir": DATA_DIR,
         "first_time": True,
-        "language": lang
+        "language": lang,
+        "cron_setup": cron_setup,
+        "skill_path": SCRIPT_DIR
     }
 
 
@@ -519,6 +528,7 @@ def main():
         print("  check-version     - Check for updates")
         print("  reminder <time>   - Check if reminder should be sent (e.g., 09:00)")
         print("  message <time>    - Get reminder message for time slot")
+        print("  setup-cron        - Generate cron job setup commands")
         sys.exit(1)
 
     command = sys.argv[1].lower()
@@ -547,6 +557,19 @@ def main():
         check_version_async(on_result)
         # Wait a bit for async result
         time.sleep(6)
+
+    elif command == "setup-cron":
+        # Generate cron job setup commands
+        setup_result = {
+            "skill_path": SCRIPT_DIR,
+            "cron_commands": {
+                "09:00": f'<command> cron create --type agent --name "Learning Check-in Morning" --cron "0 9 * * *" --channel <channel> --target-user <user> --target-session <session> --text "python \\"{SCRIPT_DIR}\\learning_checkin.py\\" checkin"',
+                "17:00": f'<command> cron create --type agent --name "Learning Check-in Afternoon" --cron "0 17 * * *" --channel <channel> --target-user <user> --target-session <session> --text "python \\"{SCRIPT_DIR}\\learning_checkin.py\\" checkin"',
+                "20:00": f'<command> cron create --type agent --name "Learning Check-in Evening" --cron "0 20 * * *" --channel <channel> --target-user <user> --target-session <session> --text "python \\"{SCRIPT_DIR}\\learning_checkin.py\\" checkin"'
+            },
+            "note": "Replace <command>, <channel>, <user>, <session> with your actual values"
+        }
+        print(json.dumps(setup_result, ensure_ascii=False, indent=2))
 
     elif command == "reminder":
         if len(sys.argv) < 3:
