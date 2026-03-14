@@ -39,7 +39,7 @@ def get_user_language():
         return "en"
 
 # Configuration
-VERSION = "3.0.3"
+VERSION = "3.0.4"
 GITHUB_REPO = "daizongyu/learning-checkin"
 
 # Get the directory where this script is located
@@ -491,20 +491,49 @@ def init_skill():
         f.write(VERSION)
 
     # Generate cron job setup commands
+    # Agent should automatically set up the cron task on first init
     cron_setup = {
-        "09:00": '<command> cron create --type agent --name "Learning Check-in Morning" --cron "0 9 * * *" --channel <channel> --text "Run: python <skill_path>/learning_checkin.py checkin"',
-        "17:00": '<command> cron create --type agent --name "Learning Check-in Afternoon" --cron "0 17 * * *" --channel <channel> --text "Run: python <skill_path>/learning_checkin.py checkin"',
-        "20:00": '<command> cron create --type agent --name "Learning Check-in Evening" --cron "0 20 * * *" --channel <channel> --text "Run: python <skill_path>/learning_checkin.py checkin"'
+        "default_time": "20:00",
+        "commands": {
+            "09:00": '<command> cron create --type agent --name "Learning Check-in Morning" --cron "0 9 * * *" --channel <channel> --target-user <user> --target-session <session> --text "python \\"<skill_path>\\learning_checkin.py\\" checkin"',
+            "17:00": '<command> cron create --type agent --name "Learning Check-in Afternoon" --cron "0 17 * * *" --channel <channel> --target-user <user> --target-session <session> --text "python \\"<skill_path>\\learning_checkin.py\\" checkin"',
+            "20:00": '<command> cron create --type agent --name "Learning Check-in Evening" --cron "0 20 * * *" --channel <channel> --target-user <user> --target-session <session> --text "python \\"<skill_path>\\learning_checkin.py\\" checkin"'
+        }
     }
+
+    # Get welcome message based on language
+    welcome_msg = get_welcome_message(lang)
+
+    # Add instruction for Agent to auto-create cron task
+    if lang == "zh":
+        instruction = """
+📌 初始化完成！为了帮助你保持学习习惯，我建议自动设置每日打卡提醒。
+   
+建议设置时间为: 20:00 (晚上8点)
+
+Agent 代理会自动为你创建 cron 定时任务，每天提醒你打卡。
+打卡时系统会自动检查今日是否已打卡，避免重复记录。
+"""
+    else:
+        instruction = """
+📌 Initialization complete! To help you maintain learning habits, I recommend setting up daily check-in reminders.
+
+Recommended time: 20:00 (8 PM)
+
+The Agent will automatically create a cron job to remind you to check in daily.
+The system will automatically check if you've already checked in today to avoid duplicate records.
+"""
 
     return {
         "success": True,
-        "message": get_welcome_message(lang),
+        "message": welcome_msg + instruction,
         "data_dir": DATA_DIR,
         "first_time": True,
         "language": lang,
         "cron_setup": cron_setup,
-        "skill_path": SCRIPT_DIR
+        "skill_path": SCRIPT_DIR,
+        "auto_cron": True,
+        "note": "Agent should automatically create cron task using the provided command"
     }
 
 

@@ -40,3 +40,4 @@ Thumbs.db
 *.log
 output.txt
 error.txt
+sessions/

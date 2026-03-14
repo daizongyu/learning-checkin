@@ -142,7 +142,9 @@ The Agent should:
    - "Just tell me when you've done your learning for today"
    - "I'll remind you if you forget"
    - "You'll build a streak!"
-3. Ask: "Ready to start your first check-in?"
+3. **Automatically set up daily reminder** by running the cron command returned from init (default: 20:00)
+4. Explain that the system will check if they've already checked in before sending reminders (to avoid duplicates)
+5. Ask: "Ready to start your first check-in?"
 
 ### Daily Check-in Interaction
 The Agent should:
@@ -167,6 +169,6 @@ The Agent should:
 
 ## Version
 
-Current version: 3.0.3
+Current version: 3.0.4
 
 GitHub: https://github.com/daizongyu/learning-checkin
