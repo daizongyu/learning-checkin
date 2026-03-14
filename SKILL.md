@@ -13,15 +13,17 @@ Help users build a daily learning habit through simple check-ins and intelligent
 This skill enables users to track their daily learning with:
 - Simple daily check-in (just say "I'm done" or "check-in complete")
 - Automatic streak tracking
-- Smart reminders at appropriate times
-- Version updates detection
+- Smart reminders at appropriate times (via cron jobs)
+- Optional version updates check
 
 ## Data Storage
 
-All data is stored in user's workspace:
-- `D:\workspace\learning-checkin\rule.md` - User's customizable rules
-- `D:\workspace\learning-checkin\records.json` - Check-in history
-- `D:\workspace\learning-checkin\version.txt` - Current version
+All data is stored locally in user's workspace:
+- `{WORKSPACE}/learning-checkin/rule.md` - User's customizable rules
+- `{WORKSPACE}/learning-checkin/records.json` - Check-in history
+- `{WORKSPACE}/learning-checkin/version.txt` - Current version
+
+Note: `{WORKSPACE}` is typically `D:\workspace` on Windows or `~/workspace` on Linux/Mac.
 
 ## Commands
 
@@ -30,7 +32,7 @@ The skill provides these functions that the Agent can call:
 ### 1. Initialize (First Time)
 
 ```bash
-python D:\workspace\learning-checkin\learning_checkin.py init
+python <skill_path>/learning_checkin.py init
 ```
 
 **When to use:** First time the user activates this skill.
@@ -44,7 +46,7 @@ python D:\workspace\learning-checkin\learning_checkin.py init
 ### 2. Check-in
 
 ```bash
-python D:\workspace\learning-checkin\learning_checkin.py checkin
+python <skill_path>/learning_checkin.py checkin
 ```
 
 **When to use:** When user says they're done with their learning (e.g., "I finished my study session", "check-in done", "learning complete", etc.)
@@ -53,12 +55,11 @@ python D:\workspace\learning-checkin\learning_checkin.py checkin
 - Run checkin command
 - Show streak count with celebration
 - Encourage user to continue tomorrow
-- Optionally check for version update in background
 
 ### 3. Status
 
 ```bash
-python D:\workspace\learning-checkin\learning_checkin.py status
+python <skill_path>/learning_checkin.py status
 ```
 
 **When to use:** When user asks about their progress or streak.
@@ -72,7 +73,7 @@ python D:\workspace\learning-checkin\learning_checkin.py status
 ### 4. Get Reminder Message
 
 ```bash
-python D:\workspace\learning-checkin\learning_checkin.py message <time>
+python <skill_path>/learning_checkin.py message <time>
 ```
 
 Where `<time>` is one of: `09:00`, `17:00`, `20:00`
@@ -87,7 +88,7 @@ Where `<time>` is one of: `09:00`, `17:00`, `20:00`
 ### 5. Check Reminder Status
 
 ```bash
-python D:\workspace\learning-checkin\learning_checkin.py reminder <time>
+python <skill_path>/learning_checkin.py reminder <time>
 ```
 
 Where `<time>` is one of: `09:00`, `17:00`, `20:00`
@@ -114,7 +115,6 @@ Where `<time>` is one of: `09:00`, `17:00`, `20:00`
 ### Streak System
 - Consecutive days of check-ins = streak
 - Miss a day = streak resets to 0
-- The Agent will congratulate milestones (7 days, 30 days, 100 days, etc.)
 
 ## Customization
 
@@ -123,14 +123,11 @@ Users can edit `rule.md` to customize:
 - Reminder messages
 - Their personal goals or notes
 
-The Agent should encourage users to customize their experience.
-
 ## Version Check
 
 On each check-in, the skill can optionally check GitHub for new versions:
 - Non-blocking (5 second timeout)
 - If new version available, Agent tells user
-- User can choose to upgrade or continue
 
 ## Agent Guidelines
 
@@ -145,7 +142,7 @@ The Agent should:
 
 ### Daily Check-in Interaction
 The Agent should:
-1. Celebrate the check-in (use user's celebration preference)
+1. Celebrate the check-in
 2. Mention current streak
 3. Encourage for tomorrow
 4. Keep it positive and simple
@@ -155,21 +152,14 @@ The Agent should:
 1. Use the appropriate tone for the time of day
 2. Morning: Cheerful and friendly
 3. Afternoon: Supportive and encouraging
-4. Evening: Urgent but caring ("Don't break your streak!")
-
-### Handling "Already Checked In"
-If user says they've already checked in:
-- Run `status` to verify
-- If true, celebrate their consistency
-- If false (they haven't), proceed with check-in
+4. Evening: Urgent but caring
 
 ## Technical Notes
 
 - All file paths use UTF-8 encoding
 - Compatible with Windows, Linux, macOS
 - Uses user's workspace directory for data
-- Default location: `D:\workspace\learning-checkin\`
-- On non-Windows systems, falls back to `~/workspace/learning-checkin`
+- No external dependencies (Python standard library only)
 
 ## Version
 

@@ -1,6 +1,6 @@
 # Learning Check-in
 
-A daily learning habit tracker skill for OpenClaw/CoPaw agents.
+A daily learning habit tracker skill for CoPaw/OpenClaw agents.
 
 ## Features
 
@@ -8,25 +8,58 @@ A daily learning habit tracker skill for OpenClaw/CoPaw agents.
 - **Streak Tracking**: Build your consecutive day streak
 - **Smart Reminders**: Morning, afternoon, and evening reminders (via cron)
 - **Customizable**: Edit rules to fit your schedule
-- **Automatic Updates**: Version check on each check-in
+- **Automatic Updates**: Optional version check on each check-in
 
 ## Installation
 
-This skill is designed to be used with CoPaw or similar applications.
+This skill is designed for CoPaw/OpenClaw agents. Installation steps depend on your platform.
 
-### Manual Installation
+### Installing the Skill
 
-1. Copy the skill folder to your CoPaw skills directory:
-   - Path: `C:\Users\YourName\.copaw\active_skills\learning-checkin\`
+1. Copy this skill folder to your agent's skills directory:
+   
+   **Windows:**
+   ```
+   Copy the learning-checkin folder to: %USERPROFILE%\.copaw\active_skills\
+   ```
+   
+   **Linux/Mac:**
+   ```
+   Copy the learning-checkin folder to: ~/.copaw/active_skills/
+   ```
 
 2. The skill will automatically initialize when first used.
 
-### Usage
+### Setting Up Reminders (Optional)
+
+If you want to receive automatic reminders, set up cron jobs using the agent's cron command:
+
+```bash
+# Morning reminder at 9:00
+copaw cron create --type agent --name "Learning Check-in Morning" \
+  --cron "0 9 * * *" --channel <your_channel> \
+  --text "Check if user needs reminder for learning check-in"
+
+# Afternoon reminder at 17:00
+copaw cron create --type agent --name "Learning Check-in Afternoon" \
+  --cron "0 17 * * *" --channel <your_channel> \
+  --text "Check if user needs reminder for learning check-in"
+
+# Evening reminder at 20:00
+copaw cron create --type agent --name "Learning Check-in Evening" \
+  --cron "0 20 * * *" --channel <your_channel> \
+  --text "Check if user needs reminder for learning check-in"
+```
+
+Replace `<your_channel>` with your messaging channel (console, discord, dingtalk, etc.).
+
+## Usage
 
 Simply tell your agent:
-- "I want to use the learning check-in skill" (first time)
-- "I'm done with my learning" or "check-in complete" (daily check-in)
-- "What's my streak?" or "How am I doing?" (check progress)
+
+- **First time:** "I want to use the learning check-in skill"
+- **Daily check-in:** "I'm done with my learning" or "check-in complete"
+- **Check progress:** "What's my streak?" or "How am I doing?"
 
 ## Quick Start
 
@@ -59,15 +92,14 @@ If you set up cron jobs for reminders, you'll receive messages at:
 - **17:00** - Encouraging afternoon reminder  
 - **20:00** - Urgent evening reminder
 
-The tone becomes more pressing as the day goes on!
-
 ## Data Storage
 
-Your check-in data is stored in your workspace:
-- `D:\workspace\learning-checkin\` (Windows)
-- `~/workspace/learning-checkin/` (Linux/Mac)
+Your check-in data is stored locally in your workspace:
 
-Files:
+**Windows:** `D:\workspace\learning-checkin\`
+**Linux/Mac:** `~/workspace/learning-checkin/`
+
+Files created:
 - `rule.md` - Your personalized rules (auto-created on first use)
 - `records.json` - Check-in history
 - `version.txt` - Current skill version
