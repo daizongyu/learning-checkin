@@ -29,21 +29,22 @@ If you want to receive automatic reminders, set up cron jobs using the agent's c
 
 ```bash
 # Morning reminder at 9:00
-copaw cron create --type agent --name "Learning Check-in Morning" \
+<command> cron create --type agent --name "Learning Check-in Morning" \
   --cron "0 9 * * *" --channel <your_channel> \
   --text "Check if user needs reminder for learning check-in"
 
 # Afternoon reminder at 17:00
-copaw cron create --type agent --name "Learning Check-in Afternoon" \
+<command> cron create --type agent --name "Learning Check-in Afternoon" \
   --cron "0 17 * * *" --channel <your_channel> \
   --text "Check if user needs reminder for learning check-in"
 
 # Evening reminder at 20:00
-copaw cron create --type agent --name "Learning Check-in Evening" \
+<command> cron create --type agent --name "Learning Check-in Evening" \
   --cron "0 20 * * *" --channel <your_channel> \
   --text "Check if user needs reminder for learning check-in"
 ```
 
+Replace `<command>` with your agent's command (e.g., `copaw`, `openclaw`, or your agent's default command).
 Replace `<your_channel>` with your messaging channel (console, discord, dingtalk, etc.).
 
 ## Usage

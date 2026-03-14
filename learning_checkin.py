@@ -23,6 +23,20 @@ import time
 import re
 import urllib.request
 import urllib.error
+import locale
+
+
+def get_user_language():
+    """Detect user's preferred language based on system locale."""
+    try:
+        # Get system locale
+        system_lang = locale.getdefaultlocale()[0] or "en_US"
+        # Check if it starts with Chinese
+        if system_lang.lower().startswith("zh"):
+            return "zh"
+        return "en"
+    except Exception:
+        return "en"
 
 # Configuration
 VERSION = "3.0.0"
@@ -40,24 +54,170 @@ REMINDER_LOG_FILE = os.path.join(DATA_DIR, "reminder_log.json")
 # Default reminder times (24-hour format)
 DEFAULT_REMINDER_TIMES = ["09:00", "17:00", "20:00"]
 
-# Reminder messages by time of day (friendly and encouraging)
-DEFAULT_MESSAGES = {
-    "09:00": [
-        "☀️ 早上好！今天的的学习完成了吗？开始一天的学习吧！",
-        "🌅 新的一天！记得今天的打卡哦～",
-        "📚 早晨提醒：学习是每天的小目标，完成后告诉我吧！"
-    ],
-    "17:00": [
-        "🌤️ 下午好！今天的任务完成了吗？",
-        "💪 一天过半了！学习进度怎么样？",
-        "⏰ 提醒一下：今天的打卡还没有记录哦！"
-    ],
-    "20:00": [
-        "🌙 晚上好！别忘了今天的打卡，连续记录很重要！",
-        "🔥 最后提醒：今天还没打卡呢，别让连续记录断掉！",
-        "⭐ 今天的你学习了吗？告诉我"完成了"，我们一起保持 streak！"
-    ]
+# Multi-language messages
+MESSAGES = {
+    "zh": {
+        # Welcome message (Chinese)
+        "welcome": """🎉 欢迎开启学习之旅！
+
+很高兴你决定培养每日学习的习惯！这是一个很棒的决定 👏
+
+🌟 多么简单：
+   每天学习完成后，告诉我"我完成了"就行！
+
+🔥 连续打卡：
+   我会帮你记录连续学习的天数
+   一天不打卡，连续记录就会重置哦
+
+⏰ 温柔提醒：
+   如果你忘记打卡，我会在这三个时间提醒你：
+   • 早上 9 点 ☀️
+   • 下午 5 点 🌤️
+   • 晚上 8 点 🌙
+
+准备好了吗？让我们开始第一次打卡吧！""",
+
+        # Check-in success messages
+        "checkin_first": "🎉 太棒了！第一天打卡完成！这是个好开始！",
+        "checkin_week": "🌟 一周了！连续7天学习，你太厉害了！",
+        "checkin_month": "🏆 一个月！30天连续学习，你是超级学霸！",
+        "checkin_100": "👑 100天！你是学习王者！膜拜！",
+        "checkin_success": [
+            "✅ 打卡成功！连续 {streak} 天了！继续加油！💪",
+            "✨ 今日学习已完成！连续 {streak} 天，保持住！",
+            "🎯 第 {streak} 天！每一天的坚持都值得尊敬！"
+        ],
+
+        # Already checked in today
+        "already_checked": [
+            "你今天已经打过卡了！太棒了！保持这个势头！🔥",
+            "今天的你已经很优秀了！明天继续加油！💪",
+            "又一天坚持下来了！为你骄傲！⭐"
+        ],
+
+        # Status messages
+        "status_done": "✅ 今天的卡已经打过了！",
+        "status_not_done": "⏳ 今天的还没打卡哦～",
+        "status_streak": " 连续 {streak} 天了！",
+        "status_no_streak": " 开始你的连续打卡之旅吧！",
+
+        # Reminder messages
+        "reminder_09": [
+            "☀️ 早上好！今天的的学习完成了吗？开始一天的学习吧！",
+            "🌅 新的一天！记得今天的打卡哦～",
+            "📚 早晨提醒：学习是每天的小目标，完成后告诉我吧！"
+        ],
+        "reminder_17": [
+            "🌤️ 下午好！今天的任务完成了吗？",
+            "💪 一天过半了！学习进度怎么样？",
+            "⏰ 提醒一下：今天的打卡还没有记录哦！"
+        ],
+        "reminder_20": [
+            "🌙 晚上好！别忘了今天的打卡，连续记录很重要！",
+            "🔥 最后提醒：今天还没打卡呢，别让连续记录断掉！",
+            "⭐ 今天的你学习了吗？告诉我'完成了'，我们一起保持 streak！"
+        ]
+    },
+    "en": {
+        # Welcome message (English)
+        "welcome": """🎉 Welcome to Your Learning Journey!
+
+I'm so glad you've decided to build a daily learning habit! That's a great decision 👏
+
+🌟 How Simple It Is:
+   Just tell me "I'm done" or "I finished my learning" when you're done for the day!
+
+🔥 Streak Tracking:
+   I'll help you track your consecutive learning days
+   Miss a day, and the streak resets (but that's okay, just start again!)
+
+⏰ Gentle Reminders:
+   If you forget to check in, I'll remind you at these times:
+   • 9:00 AM ☀️
+   • 5:00 PM 🌤️
+   • 8:00 PM 🌙
+
+Ready? Let's start your first check-in!""",
+
+        # Check-in success messages
+        "checkin_first": "🎉 Awesome! First day check-in complete! Great start!",
+        "checkin_week": "🌟 One week! 7 days in a row, you're amazing!",
+        "checkin_month": "🏆 One month! 30 days of continuous learning, you're a superstar!",
+        "checkin_100": "👑 100 days! You're the learning champion!",
+        "checkin_success": [
+            "✅ Check-in successful! {streak} days in a row! Keep it up! 💪",
+            "✨ Today's learning complete! {streak} days streak, keep it going!",
+            "🎯 Day {streak}! Every day of consistency deserves respect!"
+        ],
+
+        # Already checked in today
+        "already_checked": [
+            "You've already checked in today! Great job! Keep up the momentum! 🔥",
+            "You're already done for today! See you tomorrow! 💪",
+            "Another day completed! So proud of you! ⭐"
+        ],
+
+        # Status messages
+        "status_done": "✅ You've checked in today!",
+        "status_not_done": "⏳ Haven't checked in yet today~",
+        "status_streak": " {streak} days in a row!",
+        "status_no_streak": " Start your streak journey!",
+
+        # Reminder messages
+        "reminder_09": [
+            "☀️ Good morning! Have you completed your learning today? Let's start!",
+            "🌅 A new day! Remember to check in~",
+            "📚 Morning reminder: Learning is a daily goal. Let me know when done!"
+        ],
+        "reminder_17": [
+            "🌤️ Good afternoon! Finished your tasks today?",
+            "💪 Half day passed! How's your learning going?",
+            "⏰ Reminder: No check-in recorded yet today!"
+        ],
+        "reminder_20": [
+            "🌙 Good evening! Don't forget today's check-in, the streak matters!",
+            "🔥 Final reminder: Haven't checked in today. Don't break the streak!",
+            "⭐ Did you learn today? Tell me "done" to keep the streak going!"
+        ]
+    }
 }
+
+
+def get_message(key, lang=None):
+    """Get message in user's preferred language."""
+    if lang is None:
+        lang = get_user_language()
+    return MESSAGES.get(lang, MESSAGES.get("en", {})).get(key, MESSAGES["en"].get(key, ""))
+
+
+def get_reminder_message(time_slot, lang=None):
+    """Get reminder message for specific time slot."""
+    if lang is None:
+        lang = get_user_language()
+
+    # Try to load custom messages from rule.md
+    rules = load_rules()
+    if rules:
+        lines = rules.split("\n")
+        in_reminder_section = False
+        custom_messages = []
+        for line in lines:
+            if "message" in line.lower() or "reminder" in line.lower():
+                in_reminder_section = True
+            elif in_reminder_section and line.strip():
+                if line.startswith("-") or line.startswith("*"):
+                    custom_messages.append(line.lstrip("-* ").strip())
+                elif line.startswith("#"):
+                    break
+        if custom_messages:
+            import random
+            return random.choice(custom_messages)
+
+    # Use default messages based on time slot and language
+    time_key = f"reminder_{time_slot.split(':')[0]}"
+    messages = MESSAGES.get(lang, MESSAGES["en"]).get(time_key, MESSAGES["en"].get(time_key, []))
+    import random
+    return random.choice(messages) if messages else MESSAGES["en"]["reminder_20"][0]
 
 
 def ensure_dir():
@@ -162,18 +322,17 @@ def get_streak():
 
 def do_checkin():
     """Perform check-in."""
+    lang = get_user_language()
+
     if is_checked_in_today():
         streak = get_streak()
-        messages = [
-            f"你今天已经打过卡了！太棒了！保持这个势头！🔥",
-            f"今天的你已经很优秀了！明天继续加油！💪",
-            f"又一天坚持下来了！为你骄傲！⭐"
-        ]
+        messages = get_message("already_checked", lang)
         import random
         return {
             "success": False,
             "message": random.choice(messages),
-            "streak": streak
+            "streak": streak,
+            "language": lang
         }
 
     now = datetime.datetime.now()
@@ -188,23 +347,18 @@ def do_checkin():
 
     streak = get_streak()
 
-    # 根据streak返回不同的庆祝消息
+    # Return different celebration messages based on streak
     if streak == 1:
-        message = "🎉 太棒了！第一天打卡完成！这是个好开始！"
+        message = get_message("checkin_first", lang)
     elif streak == 7:
-        message = "🌟 一周了！连续7天学习，你太厉害了！"
+        message = get_message("checkin_week", lang)
     elif streak == 30:
-        message = "🏆 一个月！30天连续学习，你是超级学霸！"
+        message = get_message("checkin_month", lang)
     elif streak == 100:
-        message = "👑 100天！你是学习王者！膜拜！"
+        message = get_message("checkin_100", lang)
     else:
-        messages = [
-            f"✅ 打卡成功！连续 {streak} 天了！继续加油！💪",
-            f"✨ 今日学习已完成！连续 {streak} 天，保持住！",
-            f"🎯 第 {streak} 天！每一天的坚持都值得尊敬！"
-        ]
-        import random
-        message = random.choice(messages)
+        messages = get_message("checkin_success", lang)
+        message = random.choice(messages).format(streak=streak)
 
     return {
         "success": True,
@@ -220,24 +374,26 @@ def get_status():
     streak = get_streak()
     records = load_records()
     total_checkins = len(records.get("checkins", []))
+    lang = get_user_language()
 
-    # 生成友好的状态消息
+    # Generate friendly status message in user's language
     if today_checked:
-        status_message = "✅ 今天的卡已经打过了！"
+        status_message = get_message("status_done", lang)
     else:
-        status_message = "⏳ 今天的还没打卡哦～"
+        status_message = get_message("status_not_done", lang)
 
     if streak > 0:
-        status_message += f" 连续 {streak} 天了！"
+        status_message += get_message("status_streak", lang).format(streak=streak)
     else:
-        status_message += " 开始你的连续打卡之旅吧！"
+        status_message += get_message("status_no_streak", lang)
 
     return {
         "checked_in_today": today_checked,
         "streak": streak,
         "total_checkins": total_checkins,
         "today": get_today(),
-        "message": status_message
+        "message": status_message,
+        "language": lang
     }
 
 
@@ -283,35 +439,21 @@ def compare_versions(v1, v2):
     return 0
 
 
-def get_welcome_message():
+def get_welcome_message(lang=None):
     """Get the friendly welcome message for first-time users."""
-    return """🎉 欢迎开启学习之旅！
-
-很高兴你决定培养每日学习的习惯！这是一个很棒的决定 👏
-
-🌟 多么简单：
-   每天学习完成后，告诉我"我完成了"就行！
-
-🔥 连续打卡：
-   我会帮你记录连续学习的天数
-   一天不打卡，连续记录就会重置哦
-
-⏰ 温柔提醒：
-   如果你忘记打卡，我会在这三个时间提醒你：
-   • 早上 9 点 ☀️
-   • 下午 5 点 🌤️
-   • 晚上 8 点 🌙
-
-准备好了吗？让我们开始第一次打卡吧！"""
+    if lang is None:
+        lang = get_user_language()
+    return get_message("welcome", lang)
 
 
 def init_skill():
     """Initialize the skill - create data directory and default files."""
     ensure_dir()
+    lang = get_user_language()
 
     # Create default rule.md if not exists
     if not os.path.exists(RULE_FILE):
-        default_rule = get_welcome_message()
+        default_rule = get_welcome_message(lang)
         with open(RULE_FILE, "w", encoding="utf-8") as f:
             f.write(default_rule)
 
@@ -325,38 +467,16 @@ def init_skill():
 
     return {
         "success": True,
-        "message": get_welcome_message(),
+        "message": get_welcome_message(lang),
         "data_dir": DATA_DIR,
-        "first_time": True
+        "first_time": True,
+        "language": lang
     }
 
 
-def get_reminder_message(time_slot):
-    """Get reminder message for specific time slot."""
-    # Try to load custom messages from rule.md
-    rules = load_rules()
-    if rules:
-        # Look for custom messages in rule.md
-        lines = rules.split("\n")
-        in_reminder_section = False
-        custom_messages = []
-        for line in lines:
-            if "message" in line.lower() or "reminder" in line.lower():
-                in_reminder_section = True
-            elif in_reminder_section and line.strip():
-                if line.startswith("-") or line.startswith("*"):
-                    custom_messages.append(line.lstrip("-* ").strip())
-                elif line.startswith("#"):
-                    break
-
-        if custom_messages:
-            import random
-            return random.choice(custom_messages)
-
-    # Use default messages
-    import random
-    default_msgs = DEFAULT_MESSAGES.get(time_slot, DEFAULT_MESSAGES["20:00"])
-    return random.choice(default_msgs)
+def get_reminder_message_main(time_slot):
+    """Get reminder message for specific time slot (CLI entry point)."""
+    return get_reminder_message(time_slot, None)
 
 
 def should_send_reminder(time_slot):
@@ -446,7 +566,7 @@ def main():
             print("Usage: python learning_checkin.py message <time_slot>")
             sys.exit(1)
         time_slot = sys.argv[2]
-        message = get_reminder_message(time_slot)
+        message = get_reminder_message_main(time_slot)
         print(json.dumps({"message": message}, ensure_ascii=False, indent=2))
 
     else:
