@@ -26,6 +26,40 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from local_skill import LocalCheckinSkill
 
+# Version info
+__version__ = "v2.0.0"
+__repo__ = "daizongyu/learning-checkin"
+
+
+def check_update():
+    """
+    Check for updates from GitHub (lightweight, non-blocking)
+    Uses urllib (standard library) - no external dependencies
+    """
+    try:
+        import urllib.request
+        
+        url = f"https://api.github.com/repos/{__repo__}/releases/latest"
+        
+        # Set timeout to 2 seconds, fail silently
+        request = urllib.request.Request(
+            url,
+            headers={'User-Agent': 'Learning-Checkin-CLI'}
+        )
+        
+        with urllib.request.urlopen(request, timeout=2) as response:
+            data = json.loads(response.read())
+            latest_version = data.get('tag_name', '')
+            
+            # Compare versions
+            if latest_version and latest_version != __version__:
+                print(f"\n💡 New version available: {latest_version} (current: {__version__})")
+                print(f"   Update: git pull origin main")
+                print(f"   Release: https://github.com/{__repo__}/releases/latest\n")
+    except Exception:
+        # Silently ignore any network errors
+        pass
+
 
 def load_user_config():
     """Load user config (local cache)"""
@@ -43,55 +77,55 @@ def cmd_init(args):
         skill = LocalCheckinSkill()
         result = skill.init_user(args.nickname, args.country)
         
-        print(f"""
-╔═══════════════════════════════════════════════════════════╗
-║                                                           ║
-║   🎉  Welcome to Learning Check-in!  🎉                  ║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
-
-✅ User initialization successful!
-
-📋 Your Profile:
-   • User ID: {result['user_id']}
-   • Nickname: {result['nickname']}
-   • Country: {result['country']}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📖  Rules:
-
-   1️⃣  Daily Check-in
-      • Check in at least once per day
-      • Command: python checkin_cli.py checkin
-      • Optional: Add notes about what you learned
-
-   2️⃣  Streak Tracking
-      • Consecutive days are counted automatically
-      • Build your learning habit!
-
-   3️⃣  Privacy
-      • All data stored locally
-      • No network connection required
-      • No personal information collected
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🚀  Quick Start:
-
-   • Daily check-in: python checkin_cli.py checkin
-   • Add note: python checkin_cli.py checkin --note "Studied Python"
-   • View status: python checkin_cli.py status
-
-💡  Data Storage:
-   • Windows: %APPDATA%\\learning-checkin\\
-   • Linux/macOS: ~/.learning-checkin/
-
-🎯  Ready to start?
-   Run: python checkin_cli.py checkin
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-""")
+        print("")
+        print("╔═══════════════════════════════════════════════════════════╗")
+        print("║                                                           ║")
+        print("║   🎉  Welcome to Learning Check-in!  🎉                  ║")
+        print("║                                                           ║")
+        print("╚═══════════════════════════════════════════════════════════╝")
+        print("")
+        print("✅ User initialization successful!")
+        print("")
+        print("👤 Your Profile:")
+        print(f"   • User ID: {result['user_id']}")
+        print(f"   • Nickname: {result['nickname']}")
+        print(f"   • Country: {result['country']}")
+        print("")
+        print("┌───────────────────────────────────────────────────────────┐")
+        print("")
+        print("📋  Rules:")
+        print("")
+        print("   1️⃣  Daily Check-in")
+        print("      • Check in at least once per day")
+        print("      • Command: python checkin_cli.py checkin")
+        print("      • Optional: Add notes about what you learned")
+        print("")
+        print("   2️⃣  Streak Tracking")
+        print("      • Consecutive days are counted automatically")
+        print("      • Build your learning habit!")
+        print("")
+        print("   3️⃣  Privacy")
+        print("      • All data stored locally")
+        print("      • No network connection required")
+        print("      • No personal information collected")
+        print("")
+        print("└───────────────────────────────────────────────────────────┘")
+        print("")
+        print("🚀  Quick Start:")
+        print("")
+        print("   • Daily check-in: python checkin_cli.py checkin")
+        print('   • Add note: python checkin_cli.py checkin --note "Studied Python"')
+        print("   • View status: python checkin_cli.py status")
+        print("")
+        print("💾  Data Storage:")
+        print("   • Windows: %APPDATA%\\learning-checkin\\")
+        print("   • Linux/macOS: ~/.learning-checkin/")
+        print("")
+        print("🎯  Ready to start?")
+        print("   Run: python checkin_cli.py checkin")
+        print("")
+        print("└───────────────────────────────────────────────────────────┘")
+        print("")
         
     except Exception as e:
         print(f"❌ Initialization failed: {str(e)}")
@@ -122,15 +156,15 @@ def cmd_checkin(args):
             sys.exit(1)
         
         # Output result
-        print(f"""
-✅ Check-in successful!
-
-📅 Date: {result['date']}
-🔥 Streak: {result['streak']} days
-📊 Total: {result['total_checkins']} days
-
-Keep going, you're getting better! 🌟
-        """)
+        print("")
+        print("✅ Check-in successful!")
+        print("")
+        print(f"📅 Date: {result['date']}")
+        print(f"🔥 Streak: {result['streak']} days")
+        print(f"📊 Total: {result['total_checkins']} days")
+        print("")
+        print("Keep going, you're getting better! 🚀")
+        print("")
         
     except Exception as e:
         print(f"❌ Check-in failed: {str(e)}")
@@ -149,18 +183,18 @@ def cmd_status(args):
         user_id = config['user_id']
         status = skill.get_status(user_id)
         
-        checked_emoji = "✅" if status['checked_today'] else "⏳"
+        checked_emoji = "✅" if status['checked_today'] else "❌"
         
-        print(f"""
-📊 Check-in Status
-
-User: {status['nickname']} ({status['user_id']})
-Status: {status['status']}
-{checked_emoji} Today: {'Checked in' if status['checked_today'] else 'Not checked'}
-🔥 Streak: {status['current_streak']} days
-📈 Total: {status['total_checkins']} days
-🏆 Longest: {status['longest_streak']} days
-        """)
+        print("")
+        print("📊 Check-in Status")
+        print("")
+        print(f"User: {status['nickname']} ({status['user_id']})")
+        print(f"Status: {status['status']}")
+        print(f"{checked_emoji} Today: {'Checked in' if status['checked_today'] else 'Not checked'}")
+        print(f"🔥 Streak: {status['current_streak']} days")
+        print(f"📈 Total: {status['total_checkins']} days")
+        print(f"🏆 Longest: {status['longest_streak']} days")
+        print("")
         
     except Exception as e:
         print(f"❌ Failed to get status: {str(e)}")
@@ -195,6 +229,9 @@ Examples:
     subparsers.add_parser('status', help='View current check-in status')
     
     args = parser.parse_args()
+    
+    # Check for updates (non-blocking, runs in background)
+    check_update()
     
     if args.command == 'init':
         cmd_init(args)
