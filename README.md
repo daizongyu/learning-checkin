@@ -1,6 +1,6 @@
 # Learning Check-in
 
-**Simple • Local • Offline • Privacy-First**
+**Simple • Local • Privacy-First**
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -10,9 +10,14 @@
 
 ## What is this?
 
-A simple, offline learning check-in tool. Track your daily learning progress and build habits.
+A lightweight learning check-in tool that helps you build daily learning habits. All data is stored locally on your device.
 
-**No network • No account • No dependencies**
+**Core Features:**
+- ✅ **Local Storage**: All your data stays on your device
+- ✅ **Zero Dependencies**: Uses only Python standard library
+- ✅ **Privacy-First**: No personal information collected
+- ✅ **Cross-Platform**: Works on Windows, Linux, macOS
+- ✅ **Simple**: Just 3 commands to use
 
 ---
 
@@ -50,10 +55,10 @@ python checkin_cli.py init --nickname Daisy --country CN
 # Daily check-in
 python checkin_cli.py checkin
 
-# Add a note
+# Add a note about what you learned
 python checkin_cli.py checkin --note "Studied Python for 2 hours"
 
-# View status
+# View your status and streak
 python checkin_cli.py status
 ```
 
@@ -61,17 +66,28 @@ python checkin_cli.py status
 
 ## Features
 
-- ✅ **100% Offline**: No network connection needed
-- ✅ **Zero Dependencies**: Uses only Python standard library
-- ✅ **Privacy First**: All data stored locally
-- ✅ **Cross-Platform**: Windows, Linux, macOS
-- ✅ **Simple**: Just 3 commands to use
+### Core Functionality (100% Offline)
+
+- ✅ **Daily Check-in**: Track your learning progress
+- ✅ **Streak Tracking**: See your consecutive days
+- ✅ **Status View**: Check your total check-ins and longest streak
+- ✅ **Local Storage**: All data on your device
+- ✅ **Zero Dependencies**: Python standard library only
+- ✅ **Privacy-First**: No personal info collected
+
+### Optional Features (Network)
+
+- 🔔 **Update Notifications**: Silent check for new versions on each command
+  - Endpoint: `https://api.github.com/repos/daizongyu/learning-checkin/releases/latest`
+  - Timeout: 2 seconds
+  - Fails silently if offline
+  - Can be used completely offline
 
 ---
 
 ## Data Storage
 
-All data stays on your computer:
+**All data stays on your computer:**
 
 - **Windows**: `%APPDATA%\learning-checkin\`
 - **Linux/macOS**: `~/.learning-checkin/`
@@ -80,13 +96,40 @@ All data stays on your computer:
 
 ```
 learning-checkin/
-├── user_config.json    # Current user
+├── user_config.json    # Current user configuration
 └── users/
     └── {user_id}/
-        ├── profile.json
-        ├── streak.json
+        ├── profile.json    # Profile information (nickname, country)
+        ├── streak.json     # Streak tracking data
         └── checkins/
-            └── YYYY-MM-DD.json
+            └── YYYY-MM-DD.json  # Daily check-in records
+```
+
+### Privacy
+
+- ✅ No personal information collected
+- ✅ No data sent to external servers (except optional update check)
+- ✅ No account required
+- ✅ Anonymous user ID (format: `local_{nickname}_{random}`)
+
+---
+
+## Network Usage
+
+**Core functionality is 100% offline.** You can use all features without internet.
+
+**Optional network usage:**
+- On each command, the tool checks GitHub for new releases
+- If a new version is available, displays an update notification
+- Network call has 2-second timeout
+- Fails silently if network is unavailable
+- Does not interrupt or delay core functionality
+
+**Example update notification:**
+```
+💡 New version available: v2.1.0 (current: v2.0.1)
+   Update: git pull origin main
+   Release: https://github.com/daizongyu/learning-checkin/releases/latest
 ```
 
 ---
@@ -94,8 +137,8 @@ learning-checkin/
 ## Requirements
 
 - **Python**: 3.8+
-- **Dependencies**: None!
-- **Internet**: Not required
+- **Dependencies**: None (uses Python standard library only)
+- **Internet**: Optional (only for update notifications)
 
 ---
 
@@ -132,9 +175,29 @@ tar -czf backup.tar.gz ~/.learning-checkin
 
 ---
 
+## Updating
+
+When a new version is available, you'll see a notification. To update:
+
+```bash
+git pull origin main
+```
+
+Or download the latest release: https://github.com/daizongyu/learning-checkin/releases
+
+---
+
 ## License
 
 MIT License - See [LICENSE](LICENSE) for details.
+
+---
+
+## Support
+
+- **Repository**: https://github.com/daizongyu/learning-checkin
+- **Issues**: https://github.com/daizongyu/learning-checkin/issues
+- **Releases**: https://github.com/daizongyu/learning-checkin/releases
 
 ---
 
