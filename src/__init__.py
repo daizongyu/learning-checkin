@@ -6,7 +6,7 @@ All data stored locally, no network required
 import os
 from .local_skill import LocalCheckinSkill
 
-__version__ = "2.0.0"
+__version__ = "v2.0.4"
 __all__ = [
     "LocalCheckinSkill",
 ]

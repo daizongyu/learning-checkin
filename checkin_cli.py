@@ -21,13 +21,22 @@ import json
 import argparse
 from datetime import datetime
 
+# Fix Windows console encoding for UTF-8
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except AttributeError:
+        # Python < 3.7 workaround
+        import io
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from local_skill import LocalCheckinSkill
 
 # Version info
-__version__ = "v2.0.3"
+__version__ = "v2.0.4"
 __repo__ = "daizongyu/learning-checkin"
 
 
@@ -35,6 +44,8 @@ def check_update():
     """
     Check for updates from GitHub (lightweight, non-blocking)
     Uses urllib (standard library) - no external dependencies
+    
+    Returns True if update is available, False otherwise
     """
     try:
         import urllib.request
@@ -51,14 +62,16 @@ def check_update():
             data = json.loads(response.read())
             latest_version = data.get('tag_name', '')
             
-            # Compare versions
+            # Compare versions - only notify if latest is different from current
             if latest_version and latest_version != __version__:
                 print(f"\n💡 New version available: {latest_version} (current: {__version__})")
                 print(f"   Update: git pull origin main")
                 print(f"   Release: https://github.com/{__repo__}/releases/latest\n")
+                return True
     except Exception:
         # Silently ignore any network errors
         pass
+    return False
 
 
 def load_user_config():
@@ -163,7 +176,7 @@ def cmd_checkin(args):
         print(f"🔥 Streak: {result['streak']} days")
         print(f"📊 Total: {result['total_checkins']} days")
         print("")
-        print("Keep going, you're getting better! 🚀")
+        print("Keep going, you're getting better! 💪")
         print("")
         
     except Exception as e:
@@ -192,8 +205,8 @@ def cmd_status(args):
         print(f"Status: {status['status']}")
         print(f"{checked_emoji} Today: {'Checked in' if status['checked_today'] else 'Not checked'}")
         print(f"🔥 Streak: {status['current_streak']} days")
-        print(f"📈 Total: {status['total_checkins']} days")
-        print(f"🏆 Longest: {status['longest_streak']} days")
+        print(f"📱 Total: {status['total_checkins']} days")
+        print(f"📈 Longest: {status['longest_streak']} days")
         print("")
         
     except Exception as e:

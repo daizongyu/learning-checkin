@@ -5,7 +5,7 @@ Stores all data locally, no network required
 
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
 
 
@@ -94,7 +94,7 @@ class LocalCheckinSkill:
             "user_id": user_id,
             "nickname": nickname,
             "country": country.upper(),
-            "created_at": datetime.utcnow().isoformat() + "Z",
+            "created_at": datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
             "status": "active",
             "reminder_time": "20:00",
             "reminder_style": "warm"
@@ -119,7 +119,7 @@ class LocalCheckinSkill:
             "user_id": user_id,
             "nickname": nickname,
             "country": country.upper(),
-            "initialized_at": datetime.utcnow().isoformat()
+            "initialized_at": datetime.now(timezone.utc).isoformat().replace('+00:00', ''),
         }
         save_json(get_user_config_path(), config)
         
@@ -175,7 +175,7 @@ class LocalCheckinSkill:
             "user_id": user_id,
             "date": today,
             "checked": True,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
             "note": note
         }
         
