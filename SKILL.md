@@ -18,12 +18,16 @@ This skill enables users to track their daily learning with:
 
 ## Data Storage
 
-All data is stored locally in user's workspace:
-- `{WORKSPACE}/learning-checkin/rule.md` - User's customizable rules
-- `{WORKSPACE}/learning-checkin/records.json` - Check-in history
-- `{WORKSPACE}/learning-checkin/version.txt` - Current version
+All data is stored locally in a `data` subfolder next to the skill:
 
-Note: `{WORKSPACE}` is typically `D:\workspace` on Windows or `~/workspace` on Linux/Mac.
+```
+<skill_directory>/data/
+├── rule.md       - User's customizable rules
+├── records.json  - Check-in history
+└── version.txt   - Current version
+```
+
+The data folder is automatically created on first use.
 
 ## Commands
 
@@ -118,7 +122,7 @@ Where `<time>` is one of: `09:00`, `17:00`, `20:00`
 
 ## Customization
 
-Users can edit `rule.md` to customize:
+Users can edit the `rule.md` file (in the data folder) to customize:
 - Reminder times
 - Reminder messages
 - Their personal goals or notes
@@ -158,7 +162,7 @@ The Agent should:
 
 - All file paths use UTF-8 encoding
 - Compatible with Windows, Linux, macOS
-- Uses user's workspace directory for data
+- Data stored in `data` subfolder next to the skill
 - No external dependencies (Python standard library only)
 
 ## Version

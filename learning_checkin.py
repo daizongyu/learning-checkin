@@ -27,15 +27,11 @@ import urllib.error
 # Configuration
 VERSION = "1.0.0"
 GITHUB_REPO = "daizongyu/learning-checkin"
-DEFAULT_DATA_DIR = os.path.join(os.path.expanduser("~"), "workspace", "learning-checkin")
 
-# Fallback to D:\workspace on Windows if ~/workspace doesn't exist
-if sys.platform == "win32":
-    alt_path = "D:\\workspace\\learning-checkin"
-    if os.path.exists("D:\\workspace") and not os.path.exists(DEFAULT_DATA_DIR):
-        DEFAULT_DATA_DIR = alt_path
-
-DATA_DIR = os.path.normpath(DEFAULT_DATA_DIR)
+# Get the directory where this script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+# Data will be stored in a 'data' subfolder next to the script
+DATA_DIR = os.path.join(SCRIPT_DIR, "data")
 RULE_FILE = os.path.join(DATA_DIR, "rule.md")
 RECORDS_FILE = os.path.join(DATA_DIR, "records.json")
 VERSION_FILE = os.path.join(DATA_DIR, "version.txt")

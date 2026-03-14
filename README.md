@@ -12,23 +12,16 @@ A daily learning habit tracker skill for CoPaw/OpenClaw agents.
 
 ## Installation
 
-This skill is designed for CoPaw/OpenClaw agents. Installation steps depend on your platform.
+This skill follows the OpenClaw/OpenClaw skill standard installation method.
 
 ### Installing the Skill
 
-1. Copy this skill folder to your agent's skills directory:
+1. Copy this skill folder to your agent's skill storage directory
    
-   **Windows:**
-   ```
-   Copy the learning-checkin folder to: %USERPROFILE%\.copaw\active_skills\
-   ```
-   
-   **Linux/Mac:**
-   ```
-   Copy the learning-checkin folder to: ~/.copaw/active_skills/
-   ```
+   The exact path depends on your agent configuration. Typically:
+   - Copy the `learning-checkin` folder to wherever your agent stores skills
 
-2. The skill will automatically initialize when first used.
+2. The skill will automatically initialize its data folder on first use.
 
 ### Setting Up Reminders (Optional)
 
@@ -70,7 +63,7 @@ The first time you activate this skill, tell your agent:
 
 The agent will:
 - Welcome you and explain the rules
-- Set up your personal check-in folder
+- Set up your data folder automatically
 - Ask you to start your first check-in
 
 ### 2. Daily Check-in
@@ -94,19 +87,20 @@ If you set up cron jobs for reminders, you'll receive messages at:
 
 ## Data Storage
 
-Your check-in data is stored locally in your workspace:
+Your check-in data is stored locally in the skill's data folder:
 
-**Windows:** `D:\workspace\learning-checkin\`
-**Linux/Mac:** `~/workspace/learning-checkin/`
+```
+<skill_directory>/data/
+├── rule.md       - Your personalized rules
+├── records.json  - Check-in history
+└── version.txt   - Current skill version
+```
 
-Files created:
-- `rule.md` - Your personalized rules (auto-created on first use)
-- `records.json` - Check-in history
-- `version.txt` - Current skill version
+The data folder is automatically created when you first use the skill.
 
 ## Customization
 
-Edit `rule.md` to customize:
+Edit the `rule.md` file (in the data folder) to customize:
 - Reminder times
 - Reminder messages
 - Your personal goals
