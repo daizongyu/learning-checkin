@@ -1,3 +1,0 @@
-# Learning Check-in - Local Version
-# No external dependencies required!
-# Uses only Python standard library.
