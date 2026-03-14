@@ -15,6 +15,12 @@ A lightweight learning check-in tool that helps you build daily learning habits.
 - ✅ **Cross-Platform**: Works on Windows, Linux, macOS
 - ✅ **Simple**: Just 3 commands to use
 
+**What this is NOT:**
+- ❌ No global leaderboards
+- ❌ No remote data aggregation
+- ❌ No server communication (except optional update check)
+- ❌ No failure detection or monitoring
+
 ---
 
 ## Quick Start
@@ -47,6 +53,7 @@ python checkin_cli.py status
 | `checkin` | Daily check-in |
 | `checkin --note "..."` | Check-in with note about what you learned |
 | `status` | View your check-in status and streak |
+| `init --json` | JSON output for Agent integration |
 
 ---
 
@@ -95,6 +102,8 @@ learning-checkin/
             └── YYYY-MM-DD.json
 ```
 
+**Important:** All data is local. There is no cloud sync, no remote backup, and no data aggregation across users.
+
 ---
 
 ## Network Usage
@@ -127,6 +136,13 @@ learning-checkin/
 - ✅ All data stored locally
 - ✅ Anonymous user ID (format: `local_{nickname}_{random}`)
 
+**What we DON'T collect:**
+- No email addresses
+- No real names
+- No location data
+- No learning content
+- No usage statistics
+
 ---
 
 ## Updating
@@ -134,9 +150,9 @@ learning-checkin/
 When a new version is available, you'll see a notification:
 
 ```
-💡 New version available: v2.1.0 (current: v2.0.1)
-   Update: git pull origin main
-   Release: https://github.com/daizongyu/learning-checkin/releases/latest
+[UPDATE] New version available: v2.1.0 (current: v2.0.7)
+   Run: git pull origin main
+   Info: https://github.com/daizongyu/learning-checkin/releases/latest
 ```
 
 To update:

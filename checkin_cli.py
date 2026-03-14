@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Learning Check-in CLI - Local Version
@@ -36,7 +36,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 from local_skill import LocalCheckinSkill
 
 # Version info
-__version__ = "v2.0.6"
+__version__ = "v2.0.7"
 __repo__ = "daizongyu/learning-checkin"
 
 
@@ -266,3 +266,4 @@ Examples:
 
 if __name__ == '__main__':
     main()
+

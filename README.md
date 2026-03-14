@@ -19,6 +19,12 @@ A lightweight learning check-in tool that helps you build daily learning habits.
 - ✅ **Cross-Platform**: Works on Windows, Linux, macOS
 - ✅ **Simple**: Just 3 commands to use
 
+**What this is NOT:**
+- ❌ No global leaderboards
+- ❌ No remote data aggregation
+- ❌ No server communication (except optional update check)
+- ❌ No failure detection or monitoring
+
 ---
 
 ## Quick Start
@@ -60,6 +66,9 @@ python checkin_cli.py checkin --note "Studied Python for 2 hours"
 
 # View your status and streak
 python checkin_cli.py status
+
+# JSON output for Agent integration
+python checkin_cli.py init --nickname Test --country US --json
 ```
 
 ---
@@ -82,6 +91,13 @@ python checkin_cli.py status
   - Timeout: 2 seconds
   - Fails silently if offline
   - Can be used completely offline
+
+### Agent Integration
+
+- 🤖 **JSON Mode**: Structured output for Agent processing
+  - Command: `python checkin_cli.py init --nickname Name --country CN --json`
+  - Output: JSON with user data and language hint
+  - Purpose: Enable multi-language welcome messages
 
 ---
 
@@ -112,6 +128,13 @@ learning-checkin/
 - ✅ No account required
 - ✅ Anonymous user ID (format: `local_{nickname}_{random}`)
 
+**What we DON'T collect:**
+- No email addresses
+- No real names
+- No location data
+- No learning content
+- No usage statistics
+
 ---
 
 ## Network Usage
@@ -127,9 +150,9 @@ learning-checkin/
 
 **Example update notification:**
 ```
-💡 New version available: v2.1.0 (current: v2.0.1)
-   Update: git pull origin main
-   Release: https://github.com/daizongyu/learning-checkin/releases/latest
+[UPDATE] New version available: v2.1.0 (current: v2.0.7)
+   Run: git pull origin main
+   Info: https://github.com/daizongyu/learning-checkin/releases/latest
 ```
 
 ---
@@ -172,6 +195,8 @@ copy %APPDATA%\learning-checkin D:\Backup\
 ```bash
 tar -czf backup.tar.gz ~/.learning-checkin
 ```
+
+**Important:** Since all data is local, you are responsible for backing up your check-in history.
 
 ---
 

@@ -6,12 +6,19 @@ long_description = (this_directory / "README.md").read_text(encoding='utf-8')
 
 setup(
     name="learning-checkin",
-    version="2.0.0",
-    description="Local learning check-in system with streak tracking and leaderboard (no network required)",
+    version="2.0.7",
+    description="Local learning check-in system with streak tracking (100% offline, privacy-first)",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Learning Check-in Team",
+    author_email="support@learning-checkin.dev",
     license="MIT",
+    url="https://github.com/daizongyu/learning-checkin",
+    project_urls={
+        "Source": "https://github.com/daizongyu/learning-checkin",
+        "Tracker": "https://github.com/daizongyu/learning-checkin/issues",
+        "Documentation": "https://github.com/daizongyu/learning-checkin/blob/main/SKILL.md",
+    },
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
@@ -28,7 +35,7 @@ setup(
         "Topic :: Education",
         "Topic :: Productivity",
     ],
-    keywords=["learning", "check-in", "streak", "leaderboard", "productivity", "offline", "local"],
+    keywords=["learning", "check-in", "streak", "productivity", "offline", "local", "privacy"],
     py_modules=["checkin_cli"],
     packages=find_packages(where=".", include=["src*"]),
     python_requires=">=3.8",
