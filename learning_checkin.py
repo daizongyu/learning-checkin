@@ -18,9 +18,7 @@ if sys.platform == "win32":
 
 import json
 import datetime
-import time
 import locale
-import platform
 
 
 def get_user_language():
@@ -35,23 +33,16 @@ def get_user_language():
 
 
 def get_environment_info():
-    """Collect environment information for the Agent."""
-    info = {
-        "os": platform.system(),
-        "os_version": platform.version(),
-        "python_version": platform.python_version(),
-        "locale": locale.getdefaultlocale()[0] if locale.getdefaultlocale()[0] else "en_US",
-        "timezone": str(datetime.datetime.now().astimezone().tzinfo) if datetime.datetime.now().astimezone().tzinfo else "UTC",
+    """Collect minimal environment information - only user_language is required."""
+    # Only user_language is needed to display messages in the correct language
+    # Other info is not collected to protect user privacy
+    return {
         "user_language": get_user_language()
     }
-    return info
 
 
 # Configuration
-VERSION = "3.0.8"
-
-# GitHub repo for version check (Agent handles the actual check)
-GITHUB_REPO = "daizongyu/learning-checkin"
+VERSION = "3.0.9"
 
 # Get the directory where this script is located
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -373,42 +364,9 @@ def get_status():
     }
 
 
-def check_version_async(callback):
-    """Version check - Agent handles this via web search or GitHub API if needed."""
-    # Note: Version checking is delegated to the Agent
-    # Agent can check https://github.com/daizongyu/learning-checkin/releases
-    callback({"has_update": None, "note": "Agent handles version check"})
-
-
-def check_version_sync():
-    """Version check - Agent handles this via web search or GitHub API if needed."""
-    return {
-        "has_update": None,
-        "current_version": VERSION,
-        "note": "Agent can check GitHub releases for updates"
-    }
-
-
-def compare_versions(v1, v2):
-    """Compare two version strings. Returns 1 if v1 > v2, -1 if v1 < v2, 0 if equal."""
-    def parse_version(v):
-        return [int(x) for x in v.split(".")]
-
-    p1 = parse_version(v1)
-    p2 = parse_version(v2)
-
-    for i in range(max(len(p1), len(p2))):
-        part1 = p1[i] if i < len(p1) else 0
-        part2 = p2[i] if i < len(p2) else 0
-        if part1 > part2:
-            return 1
-        elif part1 < part2:
-            return -1
-
-    return 0
-
-
-def get_welcome_message(lang=None):
+def get_version():
+    """Return current version."""
+    return VERSION
     """Get the friendly welcome message for first-time users."""
     return get_message("welcome", lang)
 
@@ -534,8 +492,7 @@ def main():
         print("  status                - Get current status")
         print("  streak                - Get current streak")
         print("  version               - Get current version")
-        print("  env                   - Get environment information")
-        print("  check-version         - Check GitHub for updates (optional, Agent decides)")
+        print("  env                   - Get user language (for message display)")
         print("  cron-status           - Get reminder configuration status")
         print("  update-cron <times>   - Update reminder times (after user sets up)")
         print("  reminder <time>       - Check if reminder should be sent (e.g., 09:00)")
@@ -565,12 +522,6 @@ def main():
     elif command == "env":
         result = get_environment_info()
         print(json.dumps(result, ensure_ascii=False, indent=2))
-
-    elif command == "check-version":
-        def on_result(result):
-            print(json.dumps(result, ensure_ascii=False, indent=2))
-        check_version_async(on_result)
-        time.sleep(6)
 
     elif command == "update-cron":
         if len(sys.argv) < 3:

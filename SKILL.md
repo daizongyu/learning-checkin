@@ -13,8 +13,7 @@ Help users build a daily learning habit through simple check-ins and intelligent
 This skill enables users to track their daily learning with:
 - Simple daily check-in (just say "I'm done" or "check-in complete")
 - Automatic streak tracking
-- Optional smart reminders (Agent decides how to implement)
-- Optional version updates check
+- Optional smart reminders
 
 ## Data Storage
 
@@ -33,19 +32,15 @@ The data folder is automatically created on first use.
 
 ## Commands
 
-The skill provides these functions that the Agent can call:
-
 ### 1. Initialize (First Time)
 
 ```bash
 python <skill_path>/learning_checkin.py init
 ```
 
-**When to use:** First time the user activates this skill.
-
 **Returns:**
 - `welcome_message` - Welcome text for the user
-- `environment` - Environment info (OS, timezone, language, etc.)
+- `environment` - Only contains `user_language` (for message display)
 - `reminder_strategy` - Suggested reminder times
 - `cron_status` - Current reminder configuration status
 
@@ -53,8 +48,7 @@ python <skill_path>/learning_checkin.py init
 1. Run the init command
 2. Show welcome message and explain the check-in process
 3. Ask user if they want daily reminders
-4. If yes: Agent decides how to implement (cron, native scheduler, etc.)
-5. Ask user to start their first check-in
+4. Ask user to start their first check-in
 
 ### 2. Check-in
 
@@ -62,17 +56,10 @@ python <skill_path>/learning_checkin.py init
 python <skill_path>/learning_checkin.py checkin
 ```
 
-**When to use:** When user says they're done with their learning.
-
 **Returns:**
 - `success` - Whether check-in was recorded
 - `streak` - Current streak count
 - `message` - Celebration message (in English, translate to user's language)
-
-**Agent action:**
-- Translate celebration message to user's language
-- Show streak count
-- Encourage user
 
 ### 3. Status
 
@@ -80,27 +67,22 @@ python <skill_path>/learning_checkin.py checkin
 python <skill_path>/learning_checkin.py status
 ```
 
-**When to use:** When user asks about their progress or streak.
-
 **Returns:**
 - `checked_in_today` - Whether user has checked in today
 - `streak` - Current streak count
 - `total_checkins` - Total days checked in
 - `message` - Status message (in English)
 
-### 4. Get Environment Information
+### 4. Get User Language
 
 ```bash
 python <skill_path>/learning_checkin.py env
 ```
 
 **Returns:**
-- `os` - Operating system
-- `os_version` - OS version
-- `python_version` - Python version
-- `locale` - System locale
-- `timezone` - User's timezone
 - `user_language` - Detected language (zh/en)
+
+**Why needed:** Only to display messages in the user's preferred language.
 
 ### 5. Get Reminder Message
 
@@ -110,8 +92,6 @@ python <skill_path>/learning_checkin.py message <time>
 
 Where `<time>` is one of: `09:00`, `17:00`, `20:00`
 
-**When to use:** When sending a reminder.
-
 **Returns:**
 - `message` - Reminder text (in English, translate to user's language)
 
@@ -120,8 +100,6 @@ Where `<time>` is one of: `09:00`, `17:00`, `20:00`
 ```bash
 python <skill_path>/learning_checkin.py reminder <time>
 ```
-
-**When to use:** Before sending a reminder.
 
 **Returns:**
 - `should_send` - Whether reminder should be sent
@@ -152,12 +130,11 @@ python <skill_path>/learning_checkin.py cron-status
 - Simply tell the Agent "I'm done" or "check-in complete"
 
 ### Reminder Strategy (Suggested)
-If user wants reminders, Agent can set up at preferred time:
-- **Morning:** 09:00
-- **Afternoon:** 17:00  
-- **Evening:** 20:00
+If user wants reminders, Agent can use any scheduling method:
+- **Evening (20:00)** is recommended as default
+- Or user's preferred time
 
-The skill will check if user already checked in before sending reminders (to avoid duplicates).
+The skill will check if user already checked in before sending reminders.
 
 ### Streak System
 - Consecutive days = streak
@@ -167,12 +144,13 @@ The skill will check if user already checked in before sending reminders (to avo
 
 Users can edit the `rule.md` file (in the data folder) to customize reminder messages.
 
-## Version Check
+## Version Information
 
-The Agent can periodically check GitHub for updates:
-- Check: https://github.com/daizongyu/learning-checkin/releases
-- Current version: 3.0.8
-- If newer version available, Agent can inform user
+Current version: 3.0.9
+
+**How to check for updates:** Visit https://github.com/daizongyu/learning-checkin/releases
+
+The skill does not automatically check for updates - users can manually check the GitHub releases page if they want to see what's new.
 
 ## Agent Guidelines
 
@@ -180,32 +158,33 @@ The Agent can periodically check GitHub for updates:
 The Agent should:
 1. Be warm and encouraging
 2. Explain the simple check-in process
-3. **Ask if user wants daily reminders** - explain what it does
-4. If user agrees, Agent decides how to implement (cron, native scheduler, etc.)
-5. Ask: "Ready to start your first check-in?"
+3. Ask if user wants daily reminders (optional feature)
+4. Ask: "Ready to start your first check-in?"
 
-### Reminder Implementation
-- Agent has full control over how to implement reminders
-- Use cron skill if available, or platform-native scheduler
-- The skill provides `reminder` command to check if reminder should be sent
-- The skill provides `message` command to get localized reminder text
+### Check-in Interaction
+- Translate messages to user's language
+- Celebrate the check-in
+- Show streak count
 
-### Version Check
-- Agent decides when and how to check for updates
-- Can use web search or visit GitHub releases page
-- Skill returns current version but doesn't auto-check
+### Reminder Implementation (Optional)
+If user wants reminders:
+- Agent decides how to implement (cron, native scheduler, etc.)
+- The skill provides `reminder` and `message` commands
+- Check if user already checked in before sending
 
 ## Technical Notes
 
+- **Data collection**: Only `user_language` is collected for message display
 - All messages are in **English** - Agent translates to user's language
 - All file paths use UTF-8 encoding
 - Compatible with Windows, Linux, macOS
 - Data stored in `data` subfolder next to the skill
-- **No external network requests** - version check delegated to Agent
+- **No external network requests** from the skill
+- **No automatic scheduling** - Agent decides implementation
 - No external dependencies (Python standard library only)
 
 ## Version
 
-Current version: 3.0.8
+Current version: 3.0.9
 
 GitHub: https://github.com/daizongyu/learning-checkin
