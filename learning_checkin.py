@@ -18,11 +18,7 @@ if sys.platform == "win32":
 
 import json
 import datetime
-import threading
 import time
-import re
-import urllib.request
-import urllib.error
 import locale
 import platform
 
@@ -52,7 +48,9 @@ def get_environment_info():
 
 
 # Configuration
-VERSION = "3.0.7"
+VERSION = "3.0.8"
+
+# GitHub repo for version check (Agent handles the actual check)
 GITHUB_REPO = "daizongyu/learning-checkin"
 
 # Get the directory where this script is located
@@ -81,11 +79,8 @@ I'm so glad you've decided to build a daily learning habit! That's a great decis
    I'll help you track your consecutive learning days
    Miss a day, and the streak resets (but that's okay, just start again!)
 
-⏰ Gentle Reminders:
-   If you forget to check in, I'll remind you at these times:
-   • 9:00 AM ☀️
-   • 5:00 PM 🌤️
-   • 8:00 PM 🌙
+⏰ Want Daily Reminders?
+   I can remind you if you forget to check in! Just let me know your preferred time (e.g., morning, afternoon, or evening), and I'll help you set it up.
 
 Ready? Let's start your first check-in!""",
 
@@ -341,15 +336,12 @@ def do_checkin():
         import random
         message = random.choice(messages).format(streak=streak)
 
-    # Check for updates (non-blocking)
-    update_info = check_version_sync()
-
     return {
         "success": True,
         "message": message,
         "streak": streak,
         "date": checkin_record["date"],
-        "update": update_info
+        "note": "Version check is handled by Agent - check GitHub releases periodically"
     }
 
 
@@ -382,50 +374,19 @@ def get_status():
 
 
 def check_version_async(callback):
-    """Check for new version asynchronously."""
-    def _check():
-        try:
-            url = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
-            req = urllib.request.Request(url, headers={"User-Agent": "Learning-Checkin-Skill"})
-            with urllib.request.urlopen(req, timeout=5) as response:
-                data = json.loads(response.read().decode("utf-8"))
-                latest_version = data.get("tag_name", "").strip("v")
-                if latest_version and compare_versions(latest_version, VERSION) > 0:
-                    callback({
-                        "has_update": True,
-                        "latest_version": latest_version,
-                        "current_version": VERSION
-                    })
-                    return
-        except Exception:
-            pass
-        callback({"has_update": False})
-
-    thread = threading.Thread(target=_check)
-    thread.daemon = True
-    thread.start()
+    """Version check - Agent handles this via web search or GitHub API if needed."""
+    # Note: Version checking is delegated to the Agent
+    # Agent can check https://github.com/daizongyu/learning-checkin/releases
+    callback({"has_update": None, "note": "Agent handles version check"})
 
 
 def check_version_sync():
-    """Check for new version synchronously."""
-    try:
-        url = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
-        req = urllib.request.Request(url, headers={"User-Agent": "Learning-Checkin-Skill"})
-        with urllib.request.urlopen(req, timeout=5) as response:
-            data = json.loads(response.read().decode("utf-8"))
-            latest_version = data.get("tag_name", "").strip("v")
-            if latest_version and compare_versions(latest_version, VERSION) > 0:
-                lang = get_user_language()
-                update_msg = "🎉 New version v{0} available! Please update for the latest features.".format(latest_version) if lang != "zh" else "🎉 New version v{0} available! Please update for the latest features."
-                return {
-                    "has_update": True,
-                    "latest_version": latest_version,
-                    "current_version": VERSION,
-                    "update_message": update_msg
-                }
-    except Exception:
-        pass
-    return {"has_update": False}
+    """Version check - Agent handles this via web search or GitHub API if needed."""
+    return {
+        "has_update": None,
+        "current_version": VERSION,
+        "note": "Agent can check GitHub releases for updates"
+    }
 
 
 def compare_versions(v1, v2):
@@ -484,14 +445,9 @@ def init_skill():
     # Get environment info
     env_info = get_environment_info()
 
-    # Generate cron job setup commands
+    # Reminder strategy - for documentation only, Agent handles cron setup
     cron_setup = {
-        "default_time": "20:00",
-        "commands": {
-            "09:00": '<command> cron create --type agent --name "Learning Check-in Morning" --cron "0 9 * * *" --channel <channel> --target-user <user> --target-session <session> --text "python \\"<skill_path>\\learning_checkin.py\\" checkin"',
-            "17:00": '<command> cron create --type agent --name "Learning Check-in Afternoon" --cron "0 17 * * *" --channel <channel> --target-user <user> --target-session <session> --text "python \\"<skill_path>\\learning_checkin.py\\" checkin"',
-            "20:00": '<command> cron create --type agent --name "Learning Check-in Evening" --cron "0 20 * * *" --channel <channel> --target-user <user> --target-session <session> --text "python \\"<skill_path>\\learning_checkin.py\\" checkin"'
-        }
+        "note": "Agent uses cron skill to set up reminders at user's preferred time"
     }
 
     # Load existing cron status
@@ -500,33 +456,28 @@ def init_skill():
     # Get welcome message
     welcome_msg = get_welcome_message(lang)
 
-    # Instruction for Agent to auto-create cron task and verify
-    instruction = """
-📌 Initialization complete! To help you maintain learning habits, please set up daily check-in reminders.
-
-Recommended time: 20:00 (8 PM)
-
-The Agent should:
-1. Automatically create a cron job using the provided command
-2. Verify the cron job was set up successfully
-3. Update the cron status using: python <skill_path> learning_checkin.py update-cron <time1,time2,...>
-4. If cron setup fails, provide manual setup instructions to the user
-
-The system will automatically check if you've already checked in today to avoid duplicate records.
-"""
+    # Reminder strategy - Agent handles the actual setup
+    reminder_strategy = {
+        "recommended_time": "20:00",
+        "suggested_schedule": {
+            "morning": "09:00",
+            "afternoon": "17:00", 
+            "evening": "20:00"
+        },
+        "note": "If user wants reminders, Agent should use the cron skill to set up a daily job at the user's preferred time. The Agent will check if user already checked in before sending reminders."
+    }
 
     return {
         "success": True,
-        "message": welcome_msg + instruction,
+        "message": welcome_msg,
         "data_dir": DATA_DIR,
         "first_time": True,
         "language": lang,
         "environment": env_info,
-        "cron_setup": cron_setup,
+        "reminder_strategy": reminder_strategy,
         "cron_status": cron_status,
         "skill_path": SCRIPT_DIR,
-        "require_consent": True,
-        "note": "Agent must ask user for consent before creating cron jobs"
+        "note": "Ask user if they want daily reminders. If yes, Agent uses cron skill to set up."
     }
 
 
@@ -584,12 +535,11 @@ def main():
         print("  streak                - Get current streak")
         print("  version               - Get current version")
         print("  env                   - Get environment information")
-        print("  check-version         - Check for updates")
-        print("  update-cron <times>  - Update cron status (e.g., '20:00' or '09:00,20:00')")
-        print("  cron-status           - Get cron configuration status")
+        print("  check-version         - Check GitHub for updates (optional, Agent decides)")
+        print("  cron-status           - Get reminder configuration status")
+        print("  update-cron <times>   - Update reminder times (after user sets up)")
         print("  reminder <time>       - Check if reminder should be sent (e.g., 09:00)")
         print("  message <time>        - Get reminder message for time slot")
-        print("  setup-cron            - Generate cron job setup commands")
         sys.exit(1)
 
     command = sys.argv[1].lower()
