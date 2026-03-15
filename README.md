@@ -12,7 +12,7 @@ A daily learning habit tracker skill for CoPaw/OpenClaw agents.
 
 ## Installation
 
-This skill follows the OpenClaw/OpenClaw skill standard installation method.
+This skill follows the OpenClaw skill standard installation method.
 
 ### Installing the Skill
 
@@ -64,7 +64,7 @@ The first time you activate this skill, tell your agent:
 
 The agent will:
 - Welcome you and explain the rules
-- Set up your data folder automatically
+- Set up automatic reminders (default: 20:00)
 - Ask you to start your first check-in
 
 ### 2. Daily Check-in
@@ -92,9 +92,11 @@ Your check-in data is stored locally in the skill's data folder:
 
 ```
 <skill_directory>/data/
-├── rule.md       - Your personalized rules
-├── records.json  - Check-in history
-└── version.txt   - Current skill version
+├── rule.md           - Your personalized rules
+├── records.json      - Check-in history
+├── version.txt       - Current skill version
+├── cron_status.json  - Reminder configuration status
+└── reminder_log.json - Reminder sending log
 ```
 
 The data folder is automatically created when you first use the skill.
@@ -114,7 +116,7 @@ Edit the `rule.md` file (in the data folder) to customize:
 
 ## Version
 
-Current: **3.0.4**
+Current: **3.0.6**
 
 ## GitHub
 
