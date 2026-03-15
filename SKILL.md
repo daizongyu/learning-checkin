@@ -48,17 +48,15 @@ python <skill_path>/learning_checkin.py init
 - `environment` - Environment info (OS, timezone, language, etc.)
 - `cron_setup` - Commands to set up reminder cron jobs
 - `cron_status` - Current cron configuration status
-- `auto_cron: true` - Indicates Agent should auto-create cron job
+- `require_consent: true` - Indicates cron requires user consent before setup
 
 **Agent action:** 
 1. Run the init command
 2. Collect environment information (OS, timezone, language)
-3. **Automatically create cron job** using the command in `cron_setup` (default time: 20:00)
-4. **Verify cron setup was successful** - check if cron job was created
-5. If cron setup succeeded, call: `python <skill_path> learning_checkin.py update-cron <times>` (e.g., "20:00")
-6. If cron setup failed, inform user with manual setup instructions
-7. Show welcome message and explain the check-in process
-8. Ask user to start their first check-in
+3. Show welcome message and explain the check-in process
+4. **Ask user for consent before setting up reminders** (see Agent Guidelines below)
+5. Only if user agrees: create cron job, verify, call `update-cron`
+6. Ask user to start their first check-in
 
 ### 2. Check-in
 
@@ -218,22 +216,31 @@ The Agent should:
    - "Just tell me when you've done your learning for today"
    - "I'll remind you if you forget"
    - "You'll build a streak!"
-3. **Automatically set up daily reminder** by running the cron command returned from init (default: 20:00)
-4. **Verify cron setup was successful**
-   - If cron creation command succeeded: call `update-cron` to save status
-   - If failed: show manual setup instructions based on the app being used
-5. Explain that the system will check if they've already checked in before sending reminders (to avoid duplicates)
-6. Ask: "Ready to start your first check-in?"
+3. **Ask user for consent before setting up reminders** - explain that reminders require creating scheduled tasks
+   - Example: "Would you like me to send you daily reminders? I'll create a scheduled task to remind you at 8 PM each day. You can always opt out later."
+4. **Only create cron jobs after user explicitly agrees**
+5. If user agrees: create cron job, verify success, call `update-cron` to save status
+6. If user declines or cron fails: inform them they can set up reminders later anytime
+7. Ask: "Ready to start your first check-in?"
 
-### Cron Setup Verification (Critical)
-The Agent **MUST** verify cron setup:
-1. Attempt to create the cron job using the provided command
-2. Check if the cron job was created successfully
-3. If successful: call `update-cron` with the configured times
-4. If failed: provide manual instructions:
-   - **For CoPaw:** Show the cron create command for user to run manually
-   - **For OpenClaw:** Same, adjust command prefix as needed
-   - **For other tools:** Provide generic instructions
+### Cron Setup (Requires User Consent)
+Creating scheduled cron jobs is a **system-level change** that produces persistent behavior outside immediate agent invocation.
+
+**The Agent MUST:**
+1. **Never auto-create cron jobs without user consent**
+2. Clearly explain what reminders are and what they do before asking
+3. Wait for user's explicit "yes" before creating any cron jobs
+4. Provide easy way for users to opt out or modify later
+
+**If user consents:**
+1. Create cron job using the command from `cron_setup`
+2. Verify it was created successfully
+3. Call `update-cron <times>` to save the status
+
+**If user declines or setup fails:**
+1. Do NOT create cron job
+2. Inform user they can enable reminders anytime by asking
+3. Provide manual setup instructions if requested
 
 ### Daily Check-in Interaction
 The Agent should:

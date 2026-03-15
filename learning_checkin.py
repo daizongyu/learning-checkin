@@ -52,7 +52,7 @@ def get_environment_info():
 
 
 # Configuration
-VERSION = "3.0.6"
+VERSION = "3.0.7"
 GITHUB_REPO = "daizongyu/learning-checkin"
 
 # Get the directory where this script is located
@@ -525,8 +525,8 @@ The system will automatically check if you've already checked in today to avoid 
         "cron_setup": cron_setup,
         "cron_status": cron_status,
         "skill_path": SCRIPT_DIR,
-        "auto_cron": True,
-        "note": "Agent must verify cron setup and call update-cron command to save status"
+        "require_consent": True,
+        "note": "Agent must ask user for consent before creating cron jobs"
     }
 
 
