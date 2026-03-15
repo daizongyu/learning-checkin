@@ -181,6 +181,6 @@ If user wants reminders:
 
 ## Version
 
-Current version: 3.0.9
+Current version: 3.1.0
 
 GitHub: https://github.com/daizongyu/learning-checkin

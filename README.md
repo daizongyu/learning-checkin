@@ -65,7 +65,7 @@ Edit the `rule.md` file in the data folder to customize reminder messages or not
 
 ## Version
 
-Current: **3.0.9**
+Current: **3.1.0**
 
 ## GitHub
 

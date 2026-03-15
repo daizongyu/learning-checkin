@@ -42,7 +42,7 @@ def get_environment_info():
 
 
 # Configuration
-VERSION = "3.0.9"
+VERSION = "3.1.0"
 
 # Get the directory where this script is located
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
