@@ -144,13 +144,9 @@ The skill will check if user already checked in before sending reminders.
 
 Users can edit the `rule.md` file (in the data folder) to customize reminder messages.
 
-## Version Information
+## Version
 
-Current version: 3.0.9
-
-**How to check for updates:** Visit https://github.com/daizongyu/learning-checkin/releases
-
-The skill does not automatically check for updates - users can manually check the GitHub releases page if they want to see what's new.
+See GitHub releases: https://github.com/daizongyu/learning-checkin/releases
 
 ## Agent Guidelines
 
